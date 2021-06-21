@@ -1,0 +1,151 @@
+<form
+  [formGroup]="this.patientRegisterForm"
+  (ngSubmit)="this.sendPatientForm()"
+>
+  <!-- FirstName and LastName -->
+  <div class="mb-3 row">
+    <div class="col">
+      <input
+        type="text"
+        class="form-control"
+        formControlName="firstName"
+        placeholder="Nombre"
+      />
+      <div class="form-text error">
+        {{ this.getErrorMessage("firstName") }}
+      </div>
+    </div>
+
+    <div class="col">
+      <input
+        type="text"
+        class="form-control"
+        formControlName="lastName"
+        placeholder="Apellido"
+      />
+      <div class="form-text error">
+        {{ this.getErrorMessage("lastName") }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Edad and DNI-->
+  <div class="mb-3 row">
+    <div class="col">
+      <input
+        type="number"
+        class="form-control"
+        formControlName="age"
+        placeholder="Edad"
+      />
+      <div class="form-text error">
+        {{ this.getErrorMessage("age") }}
+      </div>
+    </div>
+
+    <div class="col">
+      <input
+        type="number"
+        class="form-control"
+        formControlName="dni"
+        placeholder="DNI"
+      />
+      <div class="form-text error">
+        {{ this.getErrorMessage("dni") }}
+      </div>
+    </div>
+  </div>
+
+  <!-- Email -->
+  <div class="mb-3">
+    <input
+      type="email"
+      class="form-control"
+      formControlName="email"
+      placeholder="Correo electrónico"
+    />
+    <div class="form-text error">
+      {{ this.getErrorMessage("email") }}
+    </div>
+  </div>
+
+  <!-- Password -->
+  <div class="mb-3">
+    <input
+      type="password"
+      class="form-control"
+      formControlName="password"
+      placeholder="Contraseña (6 o más caracteres)"
+    />
+    <div class="form-text error">
+      {{ this.getErrorMessage("password") }}
+    </div>
+  </div>
+
+  <!-- Photo (Luego pasarlo a type 'file')-->
+  <div class="mb-3">
+    <input
+      type="file"
+      class="form-control"
+      formControlName="photo"
+      placeholder="Foto #1"
+      (change)="this.handlePhoto($event)"
+    />
+    <div class="form-text error">
+      {{ this.getErrorMessage("photo") }}
+    </div>
+  </div>
+
+  <!-- Photo2 -->
+  <div class="mb-3">
+    <input
+      type="file"
+      class="form-control"
+      formControlName="photo2"
+      placeholder="Foto #2"
+      (change)="this.handlePhoto2($event)"
+    />
+    <div class="form-text error">
+      {{ this.getErrorMessage("photo2") }}
+    </div>
+  </div>
+
+  <!-- medicalAssistance -->
+  <div class="mb-3">
+    <input
+      type="text"
+      class="form-control"
+      formControlName="medicalAssistance"
+      placeholder="Obra social"
+    />
+    <div class="form-text error">
+      {{ this.getErrorMessage("medicalAssistance") }}
+    </div>
+  </div>
+
+  <!-- reCAPTCHA -->
+  <div class="mb-3 centered">
+    <re-captcha
+      (resolved)="this.resolved($event)"
+      (error)="this.onError($event)"
+      errorMode="handled"
+      siteKey="6LcOuyYTAAAAAHTjFuqhA52fmfJ_j5iFk5PsfXaU"
+      formControlName="recaptcha"
+    ></re-captcha>
+  </div>
+
+  <button
+    type="submit"
+    class="btn btn-primary w-100 mb-3"
+    [disabled]="this.patientRegisterForm.invalid"
+  >
+    <div *ngIf="this.isLoading">
+      <span class="spinner-border spinner-border-sm"></span>
+      Cargando...
+    </div>
+
+    <span *ngIf="!this.isLoading">
+      {{ this.textSubmitButton }}
+    </span>
+  </button>
+</form>

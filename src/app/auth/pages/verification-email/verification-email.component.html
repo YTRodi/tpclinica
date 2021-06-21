@@ -1,0 +1,39 @@
+<div
+  class="
+    vh-100
+    d-flex
+    justify-content-center
+    align-items-center
+    background-container
+  "
+>
+  <div class="row">
+    <div class="card col p-3 form-container blur">
+      <div class="card-header bg-transparent">
+        <h3 class="card-title text-center">Email de verificación</h3>
+      </div>
+
+      <div class="card-body bg-transparent">
+        <p>
+          Hemos enviado un correo electrónico de confirmación a
+          <b class="text-primary">{{ this.userEmail }}.</b>
+        </p>
+        <p>
+          Por favor revise su correo electrónico y haga click en el enlace para
+          verificar su cuenta.
+        </p>
+        <p>
+          ¿No te llegó el email? no te preocupes, puedes reenviarlo haciendo
+          <b class="text-primary cursor" (click)="this.onSendEmail()"
+            >click aquí</b
+          >
+        </p>
+        <p class="text-primary cursor mb-0" [routerLink]="['/auth/login']">
+          Volver al login
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <a href='https://www.freepik.es/fotos/fondo'>Foto de Fondo creado por mrsiraphol - www.freepik.es</a> -->

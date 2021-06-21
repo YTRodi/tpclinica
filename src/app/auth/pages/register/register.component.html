@@ -1,0 +1,67 @@
+<div
+  class="
+    vh-100
+    d-flex
+    justify-content-center
+    align-items-center
+    background-container
+  "
+>
+  <div class="row animate__animated animate__fadeIn">
+    <div class="col p-3 border-radius blur">
+      <h1 class="text-center">Registro</h1>
+
+      <!-- Tipo de usuario -->
+      <div class="row mb-1" (click)="this.selected = true">
+        <label abel class="form-label">Tipo de usuario</label>
+
+        <div class="container mb-3 d-flex justify-content-around">
+          <div class="col img-role">
+            <img
+              class="cursor"
+              src="../../../../assets/images/patient.jpg"
+              alt="patient"
+              width="100%"
+              height="100%"
+              (click)="this.isSpecialist = false"
+            />
+          </div>
+
+          <div class="col img-role">
+            <img
+              class="cursor"
+              src="../../../../assets/images/specialist.jpg"
+              alt="specialist"
+              width="100%"
+              height="100%"
+              (click)="this.isSpecialist = true"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="this.selected">
+        <!-- Form Paciente -->
+        <div class="row" *ngIf="!this.isSpecialist">
+          <app-patient-form
+            class="animate__animated animate__fadeInLeft"
+          ></app-patient-form>
+        </div>
+
+        <!-- Form Especialista -->
+        <div class="row" *ngIf="this.isSpecialist">
+          <app-specialist-form
+            class="animate__animated animate__fadeInRight"
+          ></app-specialist-form>
+        </div>
+      </div>
+
+      <div [routerLink]="['/auth/login']">
+        ¿Ya eres usuario en la clínica?
+        <b class="text-primary cursor">Iniciar sesión</b>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- <a href='https://www.freepik.es/fotos/fondo'>Foto de Fondo creado por mrsiraphol - www.freepik.es</a> -->

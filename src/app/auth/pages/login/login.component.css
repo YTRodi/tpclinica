@@ -1,0 +1,14 @@
+.background-container {
+  background: url(../../../../assets/images/blur-hospital.jpg) no-repeat center
+    center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+.form-container {
+  min-width: 350px;
+  max-width: 350px;
+  border-radius: 10px;
+}

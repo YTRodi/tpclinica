@@ -1,0 +1,27 @@
+/* .scrollbar {
+  position: relative;
+  height: 600px;
+  overflow: auto;
+  display: block;
+} */
+
+.fab-container {
+  background-color: #0d6efd;
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  border-radius: 50%;
+}
+
+.fab-button {
+  color: #fff;
+  font-size: 2.5rem;
+  padding: 1rem;
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+
+.img-role {
+  max-width: 120px;
+  max-height: 180px;
+}

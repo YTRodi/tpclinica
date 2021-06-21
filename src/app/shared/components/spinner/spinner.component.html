@@ -1,0 +1,9 @@
+<div
+  class="d-flex justify-content-center align-items-center"
+  *ngIf="this.isLoading"
+>
+  <div class="spinner-border text-primary" role="status"></div>
+  <span *ngIf="this.text" style="margin: 0rem 3rem 0rem 1rem">{{
+    this.text
+  }}</span>
+</div>

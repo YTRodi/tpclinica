@@ -1,0 +1,157 @@
+<nav class="navbar navbar-expand-md navbar-light bg-light">
+  <div class="container-fluid">
+    <app-spinner
+      [isLoading]="!this.currentUser"
+      [text]="'Cargando usuario...'"
+    ></app-spinner>
+
+    <div
+      class="
+        navbar-brand
+        p-0
+        mr-0
+        d-flex
+        justify-content-center
+        align-items-center
+        animate__animated animate__fadeIn
+      "
+      *ngIf="this.currentUser && this.currentUserFromDB"
+    >
+      <!-- Implementar custom pipe cuando no haya foto (pipe image) -->
+      <img
+        style="border-radius: 50px"
+        [src]="this.currentUserFromDB.photo"
+        alt="User image"
+        width="55"
+        height="55"
+      />
+
+      <div style="margin-left: 0.5rem">
+        <span>
+          {{ this.currentUserFromDB.firstName }}
+          {{ this.currentUserFromDB.lastName }}
+        </span>
+        <h6 class="m-0">
+          <!-- Role -->
+          <span
+            class="badge w-100"
+            [ngClass]="{
+              'bg-success': this.isPatient,
+              'bg-info': this.isSpecialist,
+              'bg-primary': this.isAdmin
+            }"
+            >{{
+              this.isAdmin
+                ? "Admin"
+                : this.isSpecialist
+                ? "Especialista"
+                : "Paciente"
+            }}
+          </span>
+        </h6>
+      </div>
+    </div>
+
+    <button
+      class="navbar-toggler"
+      type="button"
+      data-bs-toggle="collapse"
+      data-bs-target="#navbarSupportedContent"
+      aria-controls="navbarSupportedContent"
+      aria-expanded="false"
+      aria-label="Toggle navigation"
+    >
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <app-spinner
+        [isLoading]="!this.currentUserFromDB"
+        [text]="'Cargando barra de navegación...'"
+      ></app-spinner>
+
+      <div
+        class="animate__animated animate__fadeIn"
+        *ngIf="this.currentUserFromDB"
+      >
+        <!-- Patient -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="this.isPatient">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/dashboard']"
+              routerLinkActive="active"
+            >
+              Dashboard
+            </a>
+          </li>
+
+          <li class="nav-item" *ngFor="let navPatient of this.navPatient">
+            <a
+              class="nav-link"
+              [routerLink]="[navPatient.to]"
+              routerLinkActive="active"
+            >
+              {{ navPatient.routeName }}
+            </a>
+          </li>
+        </ul>
+
+        <!-- Specialist -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="this.isSpecialist">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/dashboard']"
+              routerLinkActive="active"
+            >
+              Dashboard
+            </a>
+          </li>
+
+          <li class="nav-item" *ngFor="let navSpecialist of this.navSpecialist">
+            <a
+              class="nav-link"
+              [routerLink]="[navSpecialist.to]"
+              routerLinkActive="active"
+            >
+              {{ navSpecialist.routeName }}
+            </a>
+          </li>
+        </ul>
+
+        <!-- Admin -->
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0" *ngIf="this.isAdmin">
+          <li class="nav-item">
+            <a
+              class="nav-link"
+              [routerLink]="['/dashboard']"
+              routerLinkActive="active"
+            >
+              Dashboard
+            </a>
+          </li>
+
+          <li class="nav-item" *ngFor="let navAdmin of this.navAdmin">
+            <a
+              class="nav-link"
+              [routerLink]="[navAdmin.to]"
+              routerLinkActive="active"
+            >
+              {{ navAdmin.routeName }}
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <button
+        *ngIf="this.currentUserFromDB"
+        class="btn btn-outline-danger"
+        style="align-self: flex-start"
+        (click)="this.onLogout()"
+      >
+        Logout
+      </button>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,192 @@
+<div
+  class="
+    vh-100
+    d-flex
+    justify-content-center
+    align-items-center
+    background-container
+  "
+>
+  <div class="row d-flex flex-column align-items-center">
+    <app-spinner
+      class="mb-3"
+      [isLoading]="!this.userAdmin || !this.userPatient || !this.userSpecialist"
+      [text]="'Cargando usuarios de prueba...'"
+    ></app-spinner>
+
+    <div
+      class="col pt-3 mb-3 form-container blur"
+      *ngIf="this.userAdmin && this.userPatient && this.userSpecialist"
+    >
+      <h1 class="text-center">Acceso rápido</h1>
+
+      <button class="btn btn-danger w-100 mb-3" (click)="this.loadAdmin()">
+        <img [src]="this.userAdmin.photo" alt="img user admin" width="50px" />
+        Cargar Admin
+      </button>
+
+      <button class="btn btn-danger w-100 mb-3" (click)="this.loadPatient()">
+        <img [src]="this.userPatient.photo" alt="img user admin" width="50px" />
+        Cargar paciente
+      </button>
+
+      <button class="btn btn-danger w-100 mb-3" (click)="this.loadSpecialist()">
+        <img
+          [src]="this.userSpecialist.photo"
+          alt="img user admin"
+          width="50px"
+        />
+        Cargar especialista
+      </button>
+    </div>
+
+    <div class="col p-3 form-container blur">
+      <h1 class="text-center">Iniciar sesión</h1>
+
+      <form
+        class="needs-validation"
+        novalidate
+        [formGroup]="this.loginForm"
+        (ngSubmit)="this.onLogin()"
+      >
+        <div class="mb-3">
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            formControlName="email"
+            placeholder="Email"
+          />
+          <div class="form-text text-danger">
+            {{ this.getErrorMessage("email") }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            formControlName="password"
+            placeholder="Password"
+          />
+          <div class="form-text text-danger">
+            {{ this.getErrorMessage("password") }}
+          </div>
+
+          <div
+            class="form-text text-danger"
+            *ngIf="
+              this.loginForm.get('password')?.touched &&
+              this.loginForm.get('password')?.hasError('minlength')
+            "
+          >
+            Debe de contener 6 caracteres como mínimo
+          </div>
+
+          <div
+            class="form-text text-danger"
+            *ngIf="this.loginForm.get('password')?.hasError('maxlength')"
+          >
+            Debe de contener 20 caracteres como máximo
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary w-100 mb-3"
+          [disabled]="this.loginForm.invalid"
+        >
+          <div *ngIf="this.isDefaultLogin">
+            <span class="spinner-border spinner-border-sm"></span>
+            Cargando...
+          </div>
+
+          <span *ngIf="!this.isDefaultLogin">Login</span>
+        </button>
+      </form>
+
+      <div [routerLink]="['/auth/register']">
+        ¿Eres nuevo en la clínica?
+        <b class="text-primary cursor">Únete ahora</b>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div
+    class="row animate__animated animate__fadeIn"
+    style="border: 1px solid black"
+  >
+    <div class="col p-3 form-container blur">
+      <h1 class="text-center">Iniciar sesión</h1>
+
+      <form
+        class="needs-validation"
+        novalidate
+        [formGroup]="this.loginForm"
+        (ngSubmit)="this.onLogin()"
+      >
+        <div class="mb-3">
+          <input
+            type="email"
+            class="form-control"
+            id="email"
+            formControlName="email"
+            placeholder="Email"
+          />
+          <div class="form-text text-danger">
+            {{ this.getErrorMessage("email") }}
+          </div>
+        </div>
+
+        <div class="mb-3">
+          <input
+            type="password"
+            class="form-control"
+            id="password"
+            formControlName="password"
+            placeholder="Password"
+          />
+          <div class="form-text text-danger">
+            {{ this.getErrorMessage("password") }}
+          </div>
+
+          <div
+            class="form-text text-danger"
+            *ngIf="
+              this.loginForm.get('password')?.touched &&
+              this.loginForm.get('password')?.hasError('minlength')
+            "
+          >
+            Debe de contener 6 caracteres como mínimo
+          </div>
+
+          <div
+            class="form-text text-danger"
+            *ngIf="this.loginForm.get('password')?.hasError('maxlength')"
+          >
+            Debe de contener 20 caracteres como máximo
+          </div>
+        </div>
+
+        <button
+          type="submit"
+          class="btn btn-primary w-100 mb-3"
+          [disabled]="this.loginForm.invalid"
+        >
+          <div *ngIf="this.isDefaultLogin">
+            <span class="spinner-border spinner-border-sm"></span>
+            Cargando...
+          </div>
+
+          <span *ngIf="!this.isDefaultLogin">Login</span>
+        </button>
+      </form>
+
+      <div [routerLink]="['/auth/register']">
+        ¿Eres nuevo en la clínica?
+        <b class="text-primary cursor">Únete ahora</b>
+      </div>
+    </div>
+  </div> -->
+</div>

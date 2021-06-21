@@ -1,0 +1,150 @@
+<div
+  class="card border-radius blur animate__animated animate__fadeIn"
+  *ngIf="this.currentUserFromDB"
+>
+  <div class="mt-2">
+    <h3 class="card-title text-center">Mis horarios</h3>
+  </div>
+
+  <div class="card-body border">
+    <div *ngFor="let specialty of this.currentUserFromDB.specialties">
+      {{ specialty.name }}
+    </div>
+
+    <form
+      class="mb-3"
+      [formGroup]="this.scheduleForm"
+      (ngSubmit)="this.sendScheduletForm()"
+    >
+      <ng-container formArrayName="shifts">
+        <div *ngFor="let shift of this.shifts.controls; let i = index">
+          <div [formGroupName]="i">
+            <select class="form-select" formControlName="specialty">
+              <option value="">Especialidad</option>
+              <option
+                [value]="specialty.name"
+                *ngFor="let specialty of this.currentUserFromDB.specialties"
+              >
+                {{ specialty.name }}
+              </option>
+            </select>
+          </div>
+
+          <div class="row mb-2 input-group" [formGroupName]="i">
+            <div class="col-3 d-flex align-items-end">
+              <select
+                class="form-select"
+                formControlName="day"
+                (change)="this.removeDayInWeek($event)"
+              >
+                <option value="">Día</option>
+                <option [value]="day" *ngFor="let day of this.week">
+                  {{ day }}
+                </option>
+              </select>
+            </div>
+
+            <div class="col">
+              <div class="row">
+                <div class="col-6">
+                  <div class="row d-flex align-items-center">
+                    <div class="col text-center">
+                      <span>Desde</span>
+                    </div>
+
+                    <div class="col">
+                      <input
+                        class="form-control border-radius"
+                        type="time"
+                        min="08:00"
+                        max="19:00"
+                        formControlName="from"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <div class="row centered">
+                    <div class="col text-center">
+                      <span>Hasta</span>
+                    </div>
+
+                    <div class="col">
+                      <input
+                        class="form-control border-radius"
+                        type="time"
+                        min="08:00"
+                        max="19:00"
+                        formControlName="to"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-1 d-flex align-items-end">
+              <button
+                class="btn btn-danger"
+                type="button"
+                (click)="this.removeShift(i)"
+              >
+                X
+              </button>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <small
+        class="form-text cursor link"
+        (click)="this.addShift()"
+        *ngIf="this.shifts.length < 7"
+      >
+        Agregar día
+      </small>
+
+      <button
+        type="submit"
+        class="btn btn-primary w-100 mt-3"
+        [disabled]="this.scheduleForm.invalid"
+      >
+        Guardar horarios
+      </button>
+    </form>
+
+    <!-- <table class="table">
+      <thead>
+        <tr>
+          <th scope="col">Especialidad</th>
+          <th scope="col">Día</th>
+          <th scope="col">Desde</th>
+          <th scope="col">Hasta</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td >Dentista</td>
+          <td>Lunes</td>
+          <td>
+            <input
+              class="form-control border-radius"
+              type="time"
+              min="08:00"
+              max="19:00"
+            />
+          </td>
+          <td>
+            <input
+              class="form-control border-radius"
+              type="time"
+              min="08:00"
+              max="19:00"
+            />
+          </td>
+        </tr>
+      </tbody>
+    </table> -->
+  </div>
+</div>

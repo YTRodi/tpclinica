@@ -1,0 +1,11 @@
+{
+  "targets": {
+    "tp-clinica-43a71": {
+      "hosting": {
+        "tpclinica": [
+          "tp-clinica-43a71"
+        ]
+      }
+    }
+  }
+}

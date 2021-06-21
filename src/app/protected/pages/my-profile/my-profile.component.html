@@ -1,0 +1,39 @@
+<div class="container mt-3">
+  <main class="content">
+    <h1 class="text-center">Mi Perfil</h1>
+
+    <div class="container mt-3">
+      <div class="row centered">
+        <!-- Mis datos -->
+        <!-- <div class="col-lg-6" style="max-width: 700px">
+          <app-spinner
+            [isLoading]="!this.currentUserFromDB"
+            [text]="'Cargando mis datos...'"
+          ></app-spinner>
+
+          <app-profile-card
+            [currentUserFromDB]="this.currentUserFromDB"
+            [roles]="{
+              isPatient: this.isPatient,
+              isSpecialist: this.isSpecialist,
+              isAdmin: this.isAdmin
+            }"
+          ></app-profile-card>
+        </div> -->
+
+        <!-- Mis horarios (Sólo especialista) -->
+        <div class="col-lg-6" style="max-width: 700px">
+          <app-spinner
+            [isLoading]="!this.currentUserFromDB"
+            [text]="'Cargando mis horarios...'"
+          ></app-spinner>
+
+          <app-schedule-card
+            *ngIf="this.currentUserFromDB"
+            [currentUserFromDB]="this.currentUserFromDB"
+          ></app-schedule-card>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

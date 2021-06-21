@@ -1,0 +1,112 @@
+<div
+  class="card border-radius blur animate__animated animate__fadeIn"
+  *ngIf="this.currentUserFromDB"
+>
+  <div class="mt-3">
+    <h3 class="card-title text-center mb-0">Mis datos</h3>
+  </div>
+
+  <div class="row">
+    <div class="col-sm-6">
+      <div class="card-body">
+        <!-- Role -->
+        <span
+          class="badge w-100 mb-2"
+          [ngClass]="{
+            'bg-success': this.roles.isPatient,
+            'bg-info': this.roles.isSpecialist,
+            'bg-primary': this.roles.isAdmin
+          }"
+          >{{
+            this.roles.isAdmin
+              ? "Admin"
+              : this.roles.isSpecialist
+              ? "Especialista"
+              : "Paciente"
+          }}
+        </span>
+
+        <!-- Photo 1 -->
+        <img
+          class="card-img-top border-radius mb-3"
+          [src]="this.currentUserFromDB.photo"
+          height="212"
+        />
+
+        <!-- Especialidad -->
+        <div *ngIf="this.roles.isSpecialist">
+          <label class="form-label">Especialidades</label>
+          <ul class="list-group">
+            <li
+              class="list-group-item"
+              *ngFor="let specialty of this.currentUserFromDB.specialties"
+            >
+              {{ specialty.name }}
+            </li>
+          </ul>
+        </div>
+
+        <!-- Photo 2 -->
+        <img
+          *ngIf="this.currentUserFromDB.photo2"
+          class="card-img-top border-radius"
+          [src]="this.currentUserFromDB.photo2"
+          height="212"
+        />
+      </div>
+    </div>
+
+    <div class="col-sm-6 d-flex align-items-center">
+      <div class="card-body">
+        <div class="mb-3">
+          <label class="form-label">uid Firebase(user)</label>
+          <input
+            class="form-control"
+            [placeholder]="this.currentUserFromDB.userUid"
+            readonly
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Nombre y apellido</label>
+          <input
+            class="form-control"
+            [placeholder]="
+              this.currentUserFromDB.lastName +
+              ' ' +
+              this.currentUserFromDB.firstName
+            "
+            readonly
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input
+            class="form-control"
+            [placeholder]="this.currentUserFromDB.email"
+            readonly
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Edad</label>
+          <input
+            class="form-control"
+            [placeholder]="this.currentUserFromDB.age"
+            readonly
+          />
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">DNI</label>
+          <input
+            class="form-control"
+            [placeholder]="this.currentUserFromDB.dni"
+            readonly
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

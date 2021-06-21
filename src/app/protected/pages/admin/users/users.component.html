@@ -1,0 +1,106 @@
+<div class="container mt-3 3">
+  <app-spinner
+    [isLoading]="!(this.users$ | async)"
+    [text]="'Cargando lista de usuarios...'"
+  ></app-spinner>
+
+  <main class="content" *ngIf="this.users$ | async">
+    <h1 class="text-center">Lista de usuarios</h1>
+
+    <app-users-table [users$]="this.users$"></app-users-table>
+  </main>
+
+  <div class="fab-container">
+    <i
+      class="fas fa-plus btn btn-primary fab-button"
+      data-bs-toggle="modal"
+      data-bs-target="#modalForm"
+    ></i>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal fade" id="modalForm" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <!-- Header -->
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Agregar usuario</h5>
+
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body">
+        <div class="container" style="max-height: 500px">
+          <!-- Tipo de usuario -->
+          <div class="row mb-1" (click)="this.touched = true">
+            <label abel class="form-label">Tipo de usuario</label>
+
+            <div class="container mb-3 d-flex justify-content-around">
+              <div class="col img-role">
+                <img
+                  class="cursor"
+                  src="../../../../../assets/images/patient.jpg"
+                  alt="patient"
+                  width="100%"
+                  height="100%"
+                  (click)="this.changeFlagUserPatient()"
+                />
+              </div>
+
+              <div class="col img-role">
+                <img
+                  class="cursor"
+                  src="../../../../../assets/images/specialist.jpg"
+                  alt="specialist"
+                  width="100%"
+                  height="100%"
+                  (click)="this.changeFlagUserSpecialist()"
+                />
+              </div>
+
+              <div class="col img-role">
+                <img
+                  class="cursor"
+                  src="../../../../../assets/images/admin.jpg"
+                  alt="admin"
+                  width="100%"
+                  height="100%"
+                  (click)="this.changeFlagUserAdmin()"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="this.touched">
+            <div class="row" *ngIf="this.isPatient">
+              <app-patient-form
+                [textSubmitButton]="'Agregar paciente'"
+                [isAdminRegister]="true"
+              ></app-patient-form>
+            </div>
+
+            <div class="row" *ngIf="this.isSpecialist">
+              <app-specialist-form
+                [textSubmitButton]="'Agregar especialista'"
+                [isAdminRegister]="true"
+              ></app-specialist-form>
+            </div>
+
+            <div class="row" *ngIf="this.isAdmin">
+              <app-admin-form
+                [textSubmitButton]="'Agregar admin'"
+                [isAdminRegister]="true"
+              ></app-admin-form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
