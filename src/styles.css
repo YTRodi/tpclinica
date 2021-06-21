@@ -1,1 +1,46 @@
 /* You can add global styles to this file, and also import other style files */
+.blur {
+  background: rgba(255, 255, 255, 0.3);
+  box-shadow: 4px 4px 32px rgba(45, 47, 51, 0.12);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  opacity: 0.9;
+}
+
+.cursor {
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.cursor:hover {
+  color: #0b5ed7 !important;
+}
+
+.link {
+  border-bottom: 1px solid #6f777f;
+  padding-bottom: 0.25rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.link:hover {
+  color: #0b5ed7 !important;
+}
+
+.border-radius {
+  border-radius: 10px;
+}
+
+.error {
+  color: #dd464e;
+  font-weight: bold;
+}
+
+.border {
+  border: 1px solid black;
+}
+
+.centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
