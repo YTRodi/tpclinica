@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core';
 import {
   AngularFirestoreCollection,
   AngularFirestore,
+  AngularFirestoreDocument,
 } from '@angular/fire/firestore';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { first, map, switchMap, tap } from 'rxjs/operators';
+import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
@@ -12,6 +13,7 @@ import { first, map, switchMap, tap } from 'rxjs/operators';
 export class ScheduleService {
   private schedulesCollection: AngularFirestoreCollection<any>;
   private nameCollectionDB = 'schedules';
+  public itemDoc: AngularFirestoreDocument<any> | null = null;
 
   constructor(private afs: AngularFirestore) {
     this.schedulesCollection = afs.collection<any[]>(this.nameCollectionDB);
@@ -33,21 +35,30 @@ export class ScheduleService {
       );
   }
 
-  public getScheduleByEmail(email: string) {
-    const email$: BehaviorSubject<string> = new BehaviorSubject(email);
-
-    return email$.pipe(
-      switchMap((email) =>
-        this.afs
-          .collection(this.nameCollectionDB, (ref) =>
-            ref.where('emailSpecialist', '==', email)
-          )
-          .valueChanges()
+  public async getScheduleByEmail(email: string) {
+    return this.afs
+      .collection(this.nameCollectionDB, (ref) =>
+        ref.where('user.email', '==', email)
       )
-    );
+      .snapshotChanges()
+      .pipe(
+        map((actions: any) =>
+          actions.map((a: any) => {
+            const data = a.payload.doc.data() as object;
+            const uid = a.payload.doc.id;
+
+            return { uid, ...data };
+          })
+        )
+      );
   }
 
   public addSchedule(schedule: object) {
     return this.schedulesCollection.add(schedule);
+  }
+
+  public async updateData(schedule: any) {
+    this.itemDoc = this.afs.doc(`schedules/${schedule.uid}`);
+    this.itemDoc.update(schedule);
   }
 }

@@ -1,4 +1,3 @@
-import { KeyValue } from '@angular/common';
 import { Component, Input, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -23,86 +22,74 @@ export const getScheduleForm = () => {
 export class ScheduleCardComponent implements OnInit {
   @Input() currentUserFromDB: any;
   public scheduleForm: FormGroup;
-  public week = [
-    'Lunes',
-    'Martes',
-    'Miércoles',
-    'Jueves',
-    'Viernes',
-    'Sábado',
-    'Domingo',
-  ];
+  public scheduleDocExits: boolean;
 
-  constructor(
-    private fb: FormBuilder,
-    private scheduleService: ScheduleService
-  ) {
+  constructor(private scheduleService: ScheduleService) {
     this.scheduleForm = getScheduleForm();
-  }
-
-  ngOnInit(): void {
-    this.scheduleService
-      .getScheduleByEmail(this.currentUserFromDB.email)
-      // .subscribe(([data]: any) => {
-      .subscribe((data) => {
-        if (data.length === 0) return;
-
-        // const { shifts } = data;
-
-        // shifts.map((shift: any) => {
-        //   const control = new FormGroup({
-        //     day: new FormControl(shift.day, [Validators.required]),
-        //     from: new FormControl(shift.from, [Validators.required]),
-        //     to: new FormControl(shift.to, [Validators.required]),
-        //   });
-
-        //   this.shifts.push(control);
-        // });
-      });
+    this.scheduleDocExits = false;
   }
 
   get shifts() {
     return this.scheduleForm.get('shifts') as FormArray;
   }
 
-  addShift() {
-    if (this.shifts.length < 7) {
-      const group = new FormGroup({
-        specialty: new FormControl('', [Validators.required]),
-        day: new FormControl('', [Validators.required]),
-        from: new FormControl('', [Validators.required]),
-        to: new FormControl('', [Validators.required]),
-      });
+  async ngOnInit(): Promise<any> {
+    const result = await this.scheduleService.getScheduleByEmail(
+      this.currentUserFromDB.email
+    );
 
-      this.shifts.push(group);
-    }
-  }
+    result.subscribe((schedules: any) => {
+      const data = schedules[0];
+      this.shifts.clear();
 
-  removeShift(index: number) {
-    this.shifts.removeAt(index);
-  }
+      if (data) {
+        this.scheduleForm.setControl('uid', new FormControl(data.uid));
+        this.scheduleDocExits = true;
 
-  removeDayInWeek(event: any) {
-    const daySelected = event.target.value;
+        if (data.shifts) {
+          data.shifts.map((shift: any) => {
+            const group = new FormGroup({
+              specialty: new FormControl(shift.specialty, [
+                Validators.required,
+              ]),
+              from: new FormControl(shift.from),
+              to: new FormControl(shift.to),
+            });
+
+            this.shifts.push(group);
+            this.scheduleForm;
+          });
+
+          return;
+        }
+      } else {
+        this.currentUserFromDB.specialties.map((specialty: any) => {
+          const group = new FormGroup({
+            specialty: new FormControl(specialty.name, [Validators.required]),
+            from: new FormControl(null),
+            to: new FormControl(null),
+          });
+
+          this.shifts.push(group);
+        });
+
+        return;
+      }
+    });
   }
 
   sendScheduletForm() {
-    const { shifts } = this.scheduleForm.getRawValue();
-
+    const result = this.scheduleForm.getRawValue();
     const newSchedule = {
-      emailSpecialist: this.currentUserFromDB.email,
       user: { ...this.currentUserFromDB },
-      specialties: this.currentUserFromDB.specialties,
-      shifts,
+      ...result,
+      createAt: new Date().toISOString(),
     };
 
-    // console.log(
-    //   `this.scheduleForm.getRawValue()`,
-    //   this.scheduleForm.getRawValue()
-    // );
-
-    console.log(`newSchedule`, newSchedule);
-
-    // this.scheduleService.addSchedule(newSchedule);
+    if (this.scheduleDocExits) {
+      this.scheduleService.updateData(newSchedule);
+    } else {
+      this.scheduleService.addSchedule(newSchedule);
+    }
   }
 }
