@@ -6,6 +6,11 @@ import {
   FormArray,
   FormControl,
 } from '@angular/forms';
+import { add } from 'date-fns';
+import {
+  errorNotification,
+  successNotification,
+} from 'src/app/helpers/notifications';
 import { ScheduleService } from '../../services/schedule.service';
 
 export const getScheduleForm = () => {
@@ -13,6 +18,8 @@ export const getScheduleForm = () => {
     shifts: new FormArray([]),
   });
 };
+
+const today = new Date();
 
 @Component({
   selector: 'app-schedule-card',
@@ -52,8 +59,14 @@ export class ScheduleCardComponent implements OnInit {
               specialty: new FormControl(shift.specialty, [
                 Validators.required,
               ]),
-              from: new FormControl(shift.from),
-              to: new FormControl(shift.to),
+              from: new FormControl(shift.from, [
+                Validators.min(8),
+                Validators.max(19),
+              ]),
+              to: new FormControl(shift.to, [
+                Validators.min(8),
+                Validators.max(19),
+              ]),
             });
 
             this.shifts.push(group);
@@ -66,8 +79,8 @@ export class ScheduleCardComponent implements OnInit {
         this.currentUserFromDB.specialties.map((specialty: any) => {
           const group = new FormGroup({
             specialty: new FormControl(specialty.name, [Validators.required]),
-            from: new FormControl(null),
-            to: new FormControl(null),
+            from: new FormControl(8, [Validators.min(8), Validators.max(19)]),
+            to: new FormControl(19, [Validators.min(8), Validators.max(19)]),
           });
 
           this.shifts.push(group);
@@ -78,18 +91,41 @@ export class ScheduleCardComponent implements OnInit {
     });
   }
 
+  getErrorMessage(formControlName: string) {
+    if (this.scheduleForm.get(formControlName)?.touched) {
+      if (this.scheduleForm.get(formControlName)?.errors?.required)
+        return 'Debes ingresar un valor';
+
+      // min - max
+      if (this.scheduleForm.get(formControlName)?.errors?.min)
+        return 'El horario mínimo es a las 8 am';
+      else if (this.scheduleForm.get(formControlName)?.errors?.max)
+        return 'El horario máximo es a las 19 pm';
+    }
+
+    return '';
+  }
+
   sendScheduletForm() {
     const result = this.scheduleForm.getRawValue();
+
     const newSchedule = {
       user: { ...this.currentUserFromDB },
       ...result,
       createAt: new Date().toISOString(),
     };
 
-    if (this.scheduleDocExits) {
-      this.scheduleService.updateData(newSchedule);
-    } else {
-      this.scheduleService.addSchedule(newSchedule);
+    try {
+      if (this.scheduleDocExits) {
+        this.scheduleService.updateData(newSchedule);
+      } else {
+        this.scheduleService.addSchedule(newSchedule);
+      }
+      successNotification({
+        text: 'Los horarios fueron actualizados con éxito!',
+      });
+    } catch (error) {
+      errorNotification({ text: error.message });
     }
   }
 }

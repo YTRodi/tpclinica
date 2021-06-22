@@ -13,6 +13,10 @@ interface Props {
   confirmParams?: ConfirmProps;
 }
 
+export const successNotification = ({ title, text }: Props) => {
+  return Swal.fire({ icon: 'success', title, text });
+};
+
 export const errorNotification = ({ title = 'Oops...', text }: Props) => {
   return Swal.fire({
     icon: 'error',

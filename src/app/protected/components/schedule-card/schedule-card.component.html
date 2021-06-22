@@ -8,7 +8,7 @@
 
   <div class="card-body border">
     <form [formGroup]="this.scheduleForm" (ngSubmit)="this.sendScheduletForm()">
-      <div class="card-body p-3" style="width: 15rem" formArrayName="shifts">
+      <div class="card-body p-3" style="width: 18rem" formArrayName="shifts">
         <div *ngFor="let shift of this.shifts.controls; let i = index">
           <div [formGroupName]="i" class="mb-3">
             <h5>{{ shift.value.specialty }}</h5>
@@ -18,15 +18,12 @@
                 <span>Desde</span>
               </div>
               <div class="col">
-                <input
-                  type="time"
-                  formControlName="from"
-                  min="08:00"
-                  max="19:00"
-                />
+                <input type="number" min="8" max="19" formControlName="from" />
+                hr
+
                 <!-- <div class="form-text error">
-                      {{ this.getErrorMessage("lastName") }}
-                    </div> -->
+                  {{ this.getErrorMessage("from") }}
+                </div> -->
               </div>
             </div>
 
@@ -35,12 +32,7 @@
                 <span>Hasta</span>
               </div>
               <div class="col">
-                <input
-                  type="time"
-                  formControlName="to"
-                  min="08:00"
-                  max="19:00"
-                />
+                <input type="number" min="8" max="19" formControlName="to" /> hr
               </div>
             </div>
           </div>
