@@ -5,7 +5,7 @@
     <div class="container mt-3">
       <div class="row centered">
         <!-- Mis datos -->
-        <div class="col-lg-8" style="max-width: 700px">
+        <div class="col-lg-6" style="max-width: 700px">
           <app-spinner
             [isLoading]="!this.currentUserFromDB"
             [text]="'Cargando mis datos...'"
@@ -22,7 +22,7 @@
         </div>
 
         <!-- Mis horarios (Sólo especialista) -->
-        <div class="col-lg-4" style="max-width: 700px">
+        <div class="col-lg-6" style="max-width: 700px">
           <app-spinner
             [isLoading]="!this.currentUserFromDB"
             [text]="'Cargando mis horarios...'"

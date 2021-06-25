@@ -6,20 +6,22 @@ import {
   FormArray,
   FormControl,
 } from '@angular/forms';
-import { add } from 'date-fns';
 import {
   errorNotification,
   successNotification,
 } from 'src/app/helpers/notifications';
-import { ScheduleService } from '../../services/schedule.service';
+
+import { ShiftService } from '../../services/shift.service';
 
 export const getScheduleForm = () => {
   return new FormBuilder().group({
-    shifts: new FormArray([]),
+    specialty: new FormControl('', [Validators.required]),
+    days: new FormArray([], [Validators.required]),
+    from: new FormControl('', [Validators.required]),
+    to: new FormControl('', [Validators.required]),
+    duration: new FormControl('', [Validators.required]),
   });
 };
-
-const today = new Date();
 
 @Component({
   selector: 'app-schedule-card',
@@ -28,78 +30,54 @@ const today = new Date();
 })
 export class ScheduleCardComponent implements OnInit {
   @Input() currentUserFromDB: any;
-  public scheduleForm: FormGroup;
-  public scheduleDocExits: boolean;
+  public shiftForm: FormGroup;
+  public weekDays = [
+    { id: 1, value: 'Lunes' },
+    { id: 2, value: 'Martes' },
+    { id: 3, value: 'Miércoles' },
+    { id: 4, value: 'Jueves' },
+    { id: 5, value: 'Viernes' },
+    { id: 6, value: 'Sábado' },
+  ];
 
-  constructor(private scheduleService: ScheduleService) {
-    this.scheduleForm = getScheduleForm();
-    this.scheduleDocExits = false;
+  public clinicHours = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
+
+  constructor(private shiftService: ShiftService) {
+    this.shiftForm = getScheduleForm();
+    // this.shiftService
+    //   .getAllShifts()
+    //   .subscribe((data) => console.log(new Date(data[2].day)));
   }
 
-  get shifts() {
-    return this.scheduleForm.get('shifts') as FormArray;
+  get days() {
+    return this.shiftForm.get('days') as FormArray;
   }
 
-  async ngOnInit(): Promise<any> {
-    const result = await this.scheduleService.getScheduleByEmail(
-      this.currentUserFromDB.email
-    );
+  async ngOnInit(): Promise<any> {}
 
-    result.subscribe((schedules: any) => {
-      const data = schedules[0];
-      this.shifts.clear();
+  onCheckChange(event: any) {
+    const parsedValue = parseInt(event.target.value);
 
-      if (data) {
-        this.scheduleForm.setControl('uid', new FormControl(data.uid));
-        this.scheduleDocExits = true;
-
-        if (data.shifts) {
-          data.shifts.map((shift: any) => {
-            const group = new FormGroup({
-              specialty: new FormControl(shift.specialty, [
-                Validators.required,
-              ]),
-              from: new FormControl(shift.from, [
-                Validators.min(8),
-                Validators.max(19),
-              ]),
-              to: new FormControl(shift.to, [
-                Validators.min(8),
-                Validators.max(19),
-              ]),
-            });
-
-            this.shifts.push(group);
-            this.scheduleForm;
-          });
-
-          return;
+    if (event.target.checked) {
+      this.days.push(new FormControl(parsedValue));
+    } else {
+      this.days.controls.forEach((control, index) => {
+        if (control.value === parsedValue) {
+          return this.days.removeAt(index);
         }
-      } else {
-        this.currentUserFromDB.specialties.map((specialty: any) => {
-          const group = new FormGroup({
-            specialty: new FormControl(specialty.name, [Validators.required]),
-            from: new FormControl(8, [Validators.min(8), Validators.max(19)]),
-            to: new FormControl(19, [Validators.min(8), Validators.max(19)]),
-          });
-
-          this.shifts.push(group);
-        });
-
-        return;
-      }
-    });
+      });
+    }
   }
 
   getErrorMessage(formControlName: string) {
-    if (this.scheduleForm.get(formControlName)?.touched) {
-      if (this.scheduleForm.get(formControlName)?.errors?.required)
+    if (this.shiftForm.get(formControlName)?.touched) {
+      if (this.shiftForm.get(formControlName)?.errors?.required)
         return 'Debes ingresar un valor';
 
       // min - max
-      if (this.scheduleForm.get(formControlName)?.errors?.min)
+      if (this.shiftForm.get(formControlName)?.errors?.min)
         return 'El horario mínimo es a las 8 am';
-      else if (this.scheduleForm.get(formControlName)?.errors?.max)
+      else if (this.shiftForm.get(formControlName)?.errors?.max)
         return 'El horario máximo es a las 19 pm';
     }
 
@@ -107,22 +85,31 @@ export class ScheduleCardComponent implements OnInit {
   }
 
   sendScheduletForm() {
-    const result = this.scheduleForm.getRawValue();
+    const result = this.shiftForm.getRawValue();
 
-    const newSchedule = {
-      user: { ...this.currentUserFromDB },
+    const updatedResult = {
       ...result,
-      createAt: new Date().toISOString(),
+      from: parseInt(result.from),
+      to: parseInt(result.to),
+      duration: parseInt(result.duration),
     };
 
     try {
-      if (this.scheduleDocExits) {
-        this.scheduleService.updateData(newSchedule);
-      } else {
-        this.scheduleService.addSchedule(newSchedule);
-      }
+      this.shiftService.generateShiftsByArray(
+        this.weekDays,
+        updatedResult,
+        this.currentUserFromDB
+      );
+
+      this.shiftForm.reset();
+      this.shiftForm.get('specialty')?.setValue('');
+      this.shiftForm.get('from')?.setValue('');
+      this.shiftForm.get('to')?.setValue('');
+      this.shiftForm.get('duration')?.setValue('');
+
       successNotification({
-        text: 'Los horarios fueron actualizados con éxito!',
+        title: 'La disponibilidad fue seteada con éxito!',
+        text: 'Se han generaron turnos de hoy a 21 días',
       });
     } catch (error) {
       errorNotification({ text: error.message });
