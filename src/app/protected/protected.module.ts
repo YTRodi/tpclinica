@@ -13,6 +13,7 @@ import { UsersTableComponent } from './components/admin/users-table/users-table.
 import { MyProfileComponent } from './pages/my-profile/my-profile.component';
 import { ProfileCardComponent } from './components/profile-card/profile-card.component';
 import { ScheduleCardComponent } from './components/schedule-card/schedule-card.component';
+import { RequestShiftComponent } from './pages/request-shift/request-shift.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { ScheduleCardComponent } from './components/schedule-card/schedule-card.
     MyProfileComponent,
     ProfileCardComponent,
     ScheduleCardComponent,
+    RequestShiftComponent,
   ],
   imports: [
     CommonModule,

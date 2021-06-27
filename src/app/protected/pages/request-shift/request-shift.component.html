@@ -1,0 +1,75 @@
+<div class="container py-4">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="p-3 rounded-3">
+        <h2>Especialidad</h2>
+        <app-specialty-finder
+          [showAddItem]="true"
+          (onSelectSpecialty)="this.setSelectedSpecialty($event)"
+        ></app-specialty-finder>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="p-5 text-white bg-dark rounded-3">
+        <h2>Especialista</h2>
+        <!-- <app-specialty-finder
+          [showAddItem]="true"
+          (onSelectSpecialty)="this.setSelectedSpecialty($event)"
+        ></app-specialty-finder> -->
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="p-5 text-white bg-dark rounded-3">
+        <h2>Día y horario</h2>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA -->
+  <div class="my-3 animate__animated animate__fadeIn">
+    <h4 class="d-flex justify-content-between align-items-center mb-3">
+      <span class="text-primary">Turnos</span>
+      <span class="badge bg-primary rounded-pill">
+        {{ 3 }}
+      </span>
+    </h4>
+
+    <div class="overflow-auto" style="height: 275px">
+      <ul class="list-group">
+        <li
+          class="
+            list-group-item
+            d-flex
+            justify-content-between
+            align-items-center
+            rounded
+            item
+          "
+        >
+          <div class="d-flex d-flex justify-content-center align-items-center">
+            <img
+              class="me-3 rounded-circle"
+              src="
+                    https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500
+                  "
+              alt="User image"
+              width="55"
+              height="55"
+            />
+            <div>
+              <small class="text-muted">UID </small>
+              <h6 class="my-0">lala</h6>
+              <small class="text-muted"> cupos disponibles </small>
+            </div>
+          </div>
+
+          <span class="text-muted">
+            <button class="btn btn-outline-danger">x</button>
+          </span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>

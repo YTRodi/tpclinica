@@ -15,6 +15,10 @@ import { AdminFormComponent } from './components/admin-form/admin-form.component
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
 import { FinderComponent } from './components/finder/finder.component';
 import { ListComponent } from './components/list/list.component';
+import { SearchBarComponent } from './components/search-bar/search-bar.component';
+
+// Finders
+import { SpecialtyFinderComponent } from './components/finders/specialty-finder/specialty-finder.component';
 
 @NgModule({
   declarations: [
@@ -26,6 +30,8 @@ import { ListComponent } from './components/list/list.component';
     SpinnerComponent,
     FinderComponent,
     ListComponent,
+    SearchBarComponent,
+    SpecialtyFinderComponent,
   ],
   imports: [
     CommonModule,
@@ -40,6 +46,9 @@ import { ListComponent } from './components/list/list.component';
     SpecialistFormComponent,
     AdminFormComponent,
     SpinnerComponent,
+    SearchBarComponent,
+    // Finders
+    SpecialtyFinderComponent,
   ],
 })
 export class SharedModule {}

@@ -19,20 +19,20 @@ export class NavbarComponent implements OnInit {
   public isAdmin: boolean;
 
   public navPatient: NavI[] = [
-    { to: '/auth/register', routeName: 'Mis turnos' },
-    { to: '/auth/register', routeName: 'Solicitar turno' },
+    // { to: '/auth/register', routeName: 'Mis turnos' },
+    { to: '/request-shift', routeName: 'Solicitar turno' },
     { to: '/my-profile', routeName: 'Mi Perfil' },
   ];
 
   public navSpecialist: NavI[] = [
-    { to: '/auth/register', routeName: 'Mis turnos' },
+    // { to: '/auth/register', routeName: 'Mis turnos' },
     { to: '/my-profile', routeName: 'Mi Perfil' },
   ];
 
   public navAdmin: NavI[] = [
     { to: '/admin/users', routeName: 'Usuarios' },
-    { to: '/admin/users', routeName: 'Turnos' },
-    { to: '/auth/register', routeName: 'Solicitar turno' },
+    // { to: '/admin/users', routeName: 'Turnos' },
+    { to: '/request-shift', routeName: 'Solicitar turno' },
     { to: '/my-profile', routeName: 'Mi Perfil' },
   ];
 

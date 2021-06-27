@@ -1,0 +1,77 @@
+<app-spinner
+  [isLoading]="this.specialtiesList.length === 0"
+  [text]="'Cargando lista de especialidades...'"
+></app-spinner>
+
+<div
+  class="my-3 animate__animated animate__fadeIn"
+  *ngIf="this.specialtiesList.length !== 0"
+>
+  <!-- Add specialty / cancel operation -->
+  <div *ngIf="this.showAddItem">
+    <div class="mb-1" *ngIf="!this.eneableAddNewSpecialty">
+      <small
+        class="cursor text-primary fw-bold"
+        (click)="this.eneableAddNewSpecialty = true"
+      >
+        Agregar nueva especialidad
+      </small>
+    </div>
+
+    <div class="mb-1" *ngIf="this.eneableAddNewSpecialty">
+      <small
+        class="cursor text-primary fw-bold"
+        (click)="this.eneableAddNewSpecialty = false"
+      >
+        Cancelar operación
+      </small>
+    </div>
+  </div>
+
+  <!-- Finder -->
+  <div class="input-group mb-3">
+    <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="this.searchString"
+      [placeholder]="
+        this.eneableAddNewSpecialty
+          ? 'Nueva especialidad'
+          : 'Buscar especialidad'
+      "
+      (keyup)="!this.eneableAddNewSpecialty && this.filterByInputValue()"
+    />
+
+    <button
+      class="btn btn-primary"
+      type="button"
+      *ngIf="this.eneableAddNewSpecialty"
+      (click)="this.addSpecialty()"
+    >
+      Agregar
+    </button>
+  </div>
+
+  <!-- List -->
+  <div
+    class="overflow-auto"
+    style="height: 185px"
+    *ngIf="!this.eneableAddNewSpecialty"
+  >
+    <div class="list-group">
+      <button
+        *ngFor="let specialty of this.copyList"
+        type="button"
+        class="list-group-item list-group-item-action"
+        [ngClass]="{ active: this.selectedSpecialty?.id === specialty.id }"
+        (click)="this.selectSpecialty(specialty)"
+      >
+        <h6 class="my-0">{{ specialty.name }}</h6>
+      </button>
+
+      <span *ngIf="this.copyList?.length === 0" class="list-group-item">
+        No existe ese item
+      </span>
+    </div>
+  </div>
+</div>

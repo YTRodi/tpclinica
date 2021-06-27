@@ -1,0 +1,86 @@
+<div class="my-3 animate__animated animate__fadeIn">
+  <div *ngIf="this.showAddItem">
+    <div class="mb-1" *ngIf="!this.eneableAddItem">
+      <small
+        class="cursor text-primary fw-bold"
+        (click)="this.eneableAddItem = true"
+      >
+        Agregar nuevo item
+      </small>
+    </div>
+
+    <div class="mb-1" *ngIf="this.eneableAddItem">
+      <small
+        class="cursor text-primary fw-bold"
+        (click)="this.eneableAddItem = false"
+      >
+        Cancelar operación
+      </small>
+    </div>
+  </div>
+
+  <div class="input-group mb-3">
+    <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="this.searchString"
+      [placeholder]="this.eneableAddItem ? 'Nuevo item' : 'Buscar item'"
+      (keyup)="!this.eneableAddItem && this.filterByInputValue()"
+    />
+
+    <button
+      class="btn btn-primary"
+      type="button"
+      *ngIf="this.eneableAddItem"
+      (click)="this.addItem()"
+    >
+      Agregar
+    </button>
+  </div>
+
+  <app-spinner
+    *ngIf="!this.eneableAddItem"
+    [isLoading]="!this.listToSearch"
+    [text]="'Cargando lista...'"
+  ></app-spinner>
+
+  <div class="overflow-auto" style="height: 185px" *ngIf="!this.eneableAddItem">
+    <!-- [ngStyle]="{ 'height: 185px': this.listToSearch.length }" -->
+
+    <div class="list-group">
+      <button
+        *ngFor="let specialty of this.listToSearch"
+        type="button"
+        class="list-group-item list-group-item-action"
+        [ngClass]="{ active: this.selectedItem?.id === specialty.id }"
+        (click)="this.selectItem(specialty)"
+      >
+        <h6 class="my-0">{{ specialty.name }}</h6>
+      </button>
+
+      <span *ngIf="this.listToSearch?.length === 0" class="list-group-item">
+        No existe ese item
+      </span>
+    </div>
+
+    <!-- <ul class="list-group">
+      <li
+        *ngFor="let specialty of this.listEspecialties"
+        class="
+          list-group-item
+          d-flex
+          justify-content-between
+          align-items-center
+        "
+        [ngClass]="{ active: this.selectedItem }"
+        (click)="this.selectSpecialty(specialty)"
+      >
+        <h6 class="my-0 list-group-item-action">{{ specialty.name }}</h6>
+      </li>
+
+      <li *ngIf="this.listEspecialties?.length === 0" class="list-group-item">
+        No existe esa especialidad
+      </li>
+    </ul> -->
+  </div>
+</div>
