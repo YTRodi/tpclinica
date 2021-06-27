@@ -7,7 +7,6 @@ import {
 import { AngularFireStorage } from '@angular/fire/storage';
 import { Observable } from 'rxjs';
 import { finalize, first, map, tap } from 'rxjs/operators';
-// import { Specialist, Admin } from 'src/app/classes/entities';
 import { FolderImages } from 'src/app/constants/images';
 import { Roles } from 'src/app/constants/roles';
 import { Patient, Specialist, Admin } from 'src/app/interfaces/entities';
@@ -49,6 +48,22 @@ export class UserService {
       );
   }
 
+  public async getAllUsersByRole(role: 'PATIENT' | 'SPECIALIST' | 'ADMIN') {
+    return this.afs
+      .collection(this.nameCollectionDB, (ref) => ref.where('role', '==', role))
+      .snapshotChanges()
+      .pipe(
+        map((actions: any) =>
+          actions.map((a: any) => {
+            const data = a.payload.doc.data() as object;
+            const uid = a.payload.doc.id;
+
+            return { uid, ...data };
+          })
+        )
+      );
+  }
+
   public async getUserByEmail(email: string | null | undefined) {
     return this.afs
       .collection<any>(this.nameCollectionDB, (ref) =>
@@ -60,6 +75,11 @@ export class UserService {
         first()
       )
       .toPromise();
+  }
+
+  public async deleteUser(uid: any) {
+    this.itemDoc = this.afs.doc(`users/${uid}`);
+    this.itemDoc.delete();
   }
 
   public async updateData(user: any) {

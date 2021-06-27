@@ -1,4 +1,5 @@
 export interface Patient {
+  uid?: string;
   userUid?: string;
   firstName: string;
   lastName: string;
@@ -13,6 +14,7 @@ export interface Patient {
 }
 
 export interface Specialist {
+  uid?: string;
   userUid?: string;
   firstName: string;
   lastName: string;
@@ -26,6 +28,7 @@ export interface Specialist {
 }
 
 export interface Admin {
+  uid?: string;
   userUid?: string;
   firstName: string;
   lastName: string;
