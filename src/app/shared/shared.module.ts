@@ -10,6 +10,7 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
 import { PatientFormComponent } from './components/patient-form/patient-form.component';
 import { SpecialistFormComponent } from './components/specialist-form/specialist-form.component';
 import { AdminFormComponent } from './components/admin-form/admin-form.component';
+import { UsersTableComponent } from './components/tables/users-table/users-table.component';
 
 // Autocomplete
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
@@ -28,6 +29,7 @@ import { SpecialtyFinderComponent } from './components/finders/specialty-finder/
     AdminFormComponent,
     // Components
     SpinnerComponent,
+    UsersTableComponent,
     FinderComponent,
     ListComponent,
     SearchBarComponent,
@@ -47,6 +49,8 @@ import { SpecialtyFinderComponent } from './components/finders/specialty-finder/
     AdminFormComponent,
     SpinnerComponent,
     SearchBarComponent,
+    // Tables
+    UsersTableComponent,
     // Finders
     SpecialtyFinderComponent,
   ],

@@ -7,24 +7,41 @@
   class="mb-3 animate__animated animate__fadeIn"
   *ngIf="this.userList?.length"
 >
-  <h4 class="d-flex justify-content-between align-items-center mb-3">
+  <!-- Count list -->
+  <h4
+    class="d-flex justify-content-between align-items-center mb-3"
+    *ngIf="this.showCountList"
+  >
     <span class="text-primary">Lista de {{ this.title }}</span>
     <span class="badge bg-primary rounded-pill">
       {{ this.userList?.length }}
     </span>
   </h4>
 
+  <!-- Finder -->
+  <div class="input-group mb-3" *ngIf="this.showInputFinder">
+    <input
+      type="text"
+      class="form-control"
+      [(ngModel)]="this.searchString"
+      placeholder="Buscar especialista"
+      (keyup)="this.filterByInputValue()"
+    />
+  </div>
+
   <div class="overflow-auto" style="height: 310px">
     <ul class="list-group">
       <li
         class="
-          list-group-item
+          list-group-item list-group-item-action
           d-flex
           justify-content-between
           align-items-center
-          rounded
         "
-        *ngFor="let user of this.userList"
+        style="cursor: pointer"
+        [ngClass]="{ active: this.selectedUser?.uid === user.uid }"
+        *ngFor="let user of this.copyList"
+        (click)="this.eneabledFinder && this.selectUser(user)"
       >
         <div
           class="d-flex justify-content-start align-items-center"
@@ -53,7 +70,7 @@
 
             <h6 class="my-0">{{ user.firstName }} {{ user.lastName }}</h6>
             <h6 class="my-0">{{ user.email }}</h6>
-            <small class="text-muted">
+            <small>
               Estado de cuenta: {{ user.active ? "aprobado" : "pendiente" }}
             </small>
           </div>
@@ -100,6 +117,10 @@
           </button>
         </div>
       </li>
+
+      <span *ngIf="this.copyList?.length === 0" class="list-group-item">
+        No existe el usuario
+      </span>
     </ul>
   </div>
 </div>

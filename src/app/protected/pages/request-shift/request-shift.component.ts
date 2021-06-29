@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SpecialtyI } from 'src/app/auth/interfaces/specialty';
+import { Admin, Patient, Specialist } from 'src/app/interfaces/entities';
 
 @Component({
   selector: 'app-request-shift',
@@ -8,6 +9,7 @@ import { SpecialtyI } from 'src/app/auth/interfaces/specialty';
 })
 export class RequestShiftComponent implements OnInit {
   public selectedSpecialty: SpecialtyI | null = null;
+  public selectedUser: Patient | Specialist | Admin | null = null;
 
   constructor() {}
 
@@ -15,5 +17,9 @@ export class RequestShiftComponent implements OnInit {
 
   setSelectedSpecialty(specialty: SpecialtyI) {
     this.selectedSpecialty = specialty;
+  }
+
+  setSelectedUser(user: Patient | Specialist | Admin) {
+    this.selectedUser = user;
   }
 }

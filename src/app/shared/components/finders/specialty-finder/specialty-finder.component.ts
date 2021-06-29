@@ -48,7 +48,9 @@ export class SpecialtyFinderComponent implements OnInit {
 
     if (this.copyList) {
       const filteredList = this.copyList.filter((specialty: SpecialtyI) => {
-        return specialty.name.toLowerCase().includes(this.searchString);
+        return specialty.name
+          .toLowerCase()
+          .includes(this.searchString.toLowerCase());
       });
 
       this.copyList = filteredList;

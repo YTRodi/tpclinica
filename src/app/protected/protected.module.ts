@@ -8,8 +8,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { SharedModule } from '../shared/shared.module';
 import { UsersComponent } from './pages/admin/users/users.component';
 import { DashboardComponent } from './pages/dashboard/dashboard.component';
-import { ModalComponent } from './components/modal/modal.component';
-import { UsersTableComponent } from './components/admin/users-table/users-table.component';
+
 import { MyProfileComponent } from './pages/my-profile/my-profile.component';
 import { ProfileCardComponent } from './components/profile-card/profile-card.component';
 import { ScheduleCardComponent } from './components/schedule-card/schedule-card.component';
@@ -21,8 +20,6 @@ import { RequestShiftComponent } from './pages/request-shift/request-shift.compo
     NavbarComponent,
     UsersComponent,
     DashboardComponent,
-    ModalComponent,
-    UsersTableComponent,
     MyProfileComponent,
     ProfileCardComponent,
     ScheduleCardComponent,

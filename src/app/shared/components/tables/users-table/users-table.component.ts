@@ -11,6 +11,10 @@ import { AuthService } from 'src/app/auth/services/auth.service';
   styleUrls: ['./users-table.component.css'],
 })
 export class UsersTableComponent implements OnInit {
+  @Input() eneabledFinder: boolean = false;
+  @Input() showInputFinder: boolean = false;
+  @Input() showCountList: boolean = true;
+
   // Buttons
   @Input() showDeleteButton: boolean = true;
   @Input() showActiveButton: boolean = true;
@@ -22,39 +26,54 @@ export class UsersTableComponent implements OnInit {
   @Output() onSelectUser: EventEmitter<Patient | Specialist | Admin>;
   public currentUserFromDB: Patient | Specialist | Admin | null = null;
   public roles = Roles;
-
   public userList: Array<Patient | Specialist | Admin> | null = null;
+
+  // Finder
+  public searchString: string;
+  public copyList: Array<Patient | Specialist | Admin> | null = null;
+  public selectedUser: any;
 
   constructor(
     private authService: AuthService,
     private userService: UserService
   ) {
     this.onSelectUser = new EventEmitter<Patient | Specialist | Admin>();
+    this.searchString = '';
   }
 
   async ngOnInit(): Promise<void> {
     switch (this.filter) {
       case 'ALL':
-        this.userService
-          .getAllUsers()
-          .subscribe((userList) => (this.userList = userList));
+        this.userService.getAllUsers().subscribe((userList) => {
+          this.userList = userList;
+          this.copyList = userList;
+        });
         break;
 
       case Roles.PATIENT:
         (await this.userService.getAllUsersByRole(this.filter)).subscribe(
-          (onlyPatients) => (this.userList = onlyPatients)
+          (onlyPatients) => {
+            this.userList = onlyPatients;
+            this.copyList = onlyPatients;
+          }
         );
         break;
 
       case Roles.SPECIALIST:
         (await this.userService.getAllUsersByRole(this.filter)).subscribe(
-          (onlySpecialists) => (this.userList = onlySpecialists)
+          (onlySpecialists) => {
+            this.userList = onlySpecialists;
+            this.copyList = onlySpecialists;
+          }
         );
         break;
 
       case Roles.ADMIN:
         (await this.userService.getAllUsersByRole(this.filter)).subscribe(
-          (onlyAdmins) => (this.userList = onlyAdmins)
+          (onlyAdmins) => {
+            this.userList = onlyAdmins;
+            this.copyList = onlyAdmins;
+          }
         );
         break;
     }
@@ -63,8 +82,31 @@ export class UsersTableComponent implements OnInit {
     this.currentUserFromDB = currentUserFromDB;
   }
 
+  filterByInputValue() {
+    this.copyList = this.userList;
+
+    if (this.copyList) {
+      const filteredList = this.copyList.filter(
+        (user: Patient | Specialist | Admin) => {
+          return (
+            user.firstName
+              .toLowerCase()
+              .includes(this.searchString.toLowerCase()) ||
+            user.lastName
+              .toLowerCase()
+              .includes(this.searchString.toLowerCase()) ||
+            user.email.toLowerCase().includes(this.searchString.toLowerCase())
+          );
+        }
+      );
+
+      this.copyList = filteredList;
+    }
+  }
+
   async selectUser(selectedUser: Patient | Specialist | Admin) {
     this.onSelectUser.emit(selectedUser);
+    this.selectedUser = selectedUser;
   }
 
   async onActiveUser(user: Patient | Specialist | Admin) {
