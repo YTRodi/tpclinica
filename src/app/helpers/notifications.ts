@@ -30,7 +30,7 @@ export const errorNotification = ({ title = 'Oops...', text }: Props) => {
 export const confirmNotification = async ({
   title = '¿Estás seguro?',
   text,
-  confirmMessage = 'Confirmar cambio',
+  confirmMessage = 'Confirmar',
   confirmParams,
 }: Props): Promise<any> => {
   let confirmed = false;
