@@ -64,6 +64,24 @@ export class UserService {
       );
   }
 
+  public async getUsersBySpecialty(specialty: { id: string; name: string }) {
+    return this.afs
+      .collection(this.nameCollectionDB, (ref) =>
+        ref.where('specialties', 'array-contains', specialty)
+      )
+      .snapshotChanges()
+      .pipe(
+        map((actions: any) =>
+          actions.map((a: any) => {
+            const data = a.payload.doc.data() as object;
+            const uid = a.payload.doc.id;
+
+            return { uid, ...data };
+          })
+        )
+      );
+  }
+
   public async getUserByEmail(email: string | null | undefined) {
     return this.afs
       .collection<any>(this.nameCollectionDB, (ref) =>

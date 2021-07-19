@@ -15,14 +15,22 @@
         <h2>Especialista</h2>
 
         <app-users-table
+          *ngIf="this.selectedSpecialty"
           (onSelectUser)="this.setSelectedUser($event)"
+          [filterBySpecialtyParams]="this.selectedSpecialty"
+          [filter]="'SPECIALIST'"
           [eneabledFinder]="true"
           [showInputFinder]="true"
           [showCountList]="false"
           [showActiveButton]="false"
           [showDeleteButton]="false"
-          [showRole]="false"
+          [showRole]="true"
+          [showStatusAccount]="false"
         ></app-users-table>
+
+        <div *ngIf="!this.selectedSpecialty">
+          Seleccione una especialidad para ver los especialistas disponibles...
+        </div>
       </div>
     </div>
 
@@ -41,24 +49,33 @@
 
       <div class="p-3 text-white bg-dark rounded-3">
         <h2>Día</h2>
-        inpu
+        <div *ngIf="!this.selectedUser">
+          Selecciona un especialista para ver sus días...
+        </div>
+
+        <div *ngIf="this.selectedUser">
+          <!-- {{ this.selectedUser | json }} -->
+        </div>
       </div>
 
       <div class="p-3 text-white bg-dark rounded-3">
         <h2>Horario</h2>
+        <div *ngIf="!this.selectedUser">
+          Selecciona un especialista para ver sus horarios...
+        </div>
       </div>
     </div>
   </div>
 
-  <div>
+  <pre>
     Especialidad seleccionada:
     {{ this.selectedSpecialty | json }}
-  </div>
+  </pre>
 
-  <div>
+  <pre>
     Usuario seleccionad:
     {{ this.selectedUser | json }}
-  </div>
+  </pre>
 
   <!-- TABLA -->
   <div class="my-3 animate__animated animate__fadeIn">

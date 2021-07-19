@@ -6,7 +6,7 @@
 
   <main class="content" *ngIf="this.users$ | async">
     <h1 class="text-center">Lista de usuarios</h1>
-    <app-users-table></app-users-table>
+    <app-users-table [filter]="'ALL'"></app-users-table>
   </main>
 
   <div class="fab-container">

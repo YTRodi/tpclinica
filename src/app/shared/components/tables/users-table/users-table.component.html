@@ -3,6 +3,14 @@
   [text]="'Cargando lista de usuarios'"
 ></app-spinner>
 
+<!-- Filtros de especialistas por especialidad (solicitar turno) -->
+<div>
+  <span *ngIf="this.userList?.length === 0" class="list-group-item">
+    No hay especialistas para la especialidad de
+    {{ this.filterBySpecialtyParams.name }}
+  </span>
+</div>
+
 <div
   class="mb-3 animate__animated animate__fadeIn"
   *ngIf="this.userList?.length"
@@ -70,7 +78,7 @@
 
             <h6 class="my-0">{{ user.firstName }} {{ user.lastName }}</h6>
             <h6 class="my-0">{{ user.email }}</h6>
-            <small>
+            <small *ngIf="this.showStatusAccount">
               Estado de cuenta: {{ user.active ? "aprobado" : "pendiente" }}
             </small>
           </div>

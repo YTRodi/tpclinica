@@ -22,4 +22,10 @@ export class RequestShiftComponent implements OnInit {
   setSelectedUser(user: Patient | Specialist | Admin) {
     this.selectedUser = user;
   }
+
+  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
+  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
+  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
+  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
+  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
 }

@@ -1,4 +1,12 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { UserService } from 'src/app/auth/services/user.service';
 import { Specialist, Patient, Admin } from 'src/app/interfaces/entities';
 import { Roles } from 'src/app/constants/roles';
@@ -10,7 +18,10 @@ import { AuthService } from 'src/app/auth/services/auth.service';
   templateUrl: './users-table.component.html',
   styleUrls: ['./users-table.component.css'],
 })
-export class UsersTableComponent implements OnInit {
+export class UsersTableComponent implements OnInit, OnChanges {
+  // Find Specialists by specialty
+  @Input() filterBySpecialtyParams: any = null;
+
   @Input() eneabledFinder: boolean = false;
   @Input() showInputFinder: boolean = false;
   @Input() showCountList: boolean = true;
@@ -20,6 +31,7 @@ export class UsersTableComponent implements OnInit {
   @Input() showActiveButton: boolean = true;
 
   // Fields
+  @Input() showStatusAccount: boolean = true;
   @Input() showRole: boolean = true;
   @Input() title: string = 'usuarios';
   @Input() filter: 'PATIENT' | 'SPECIALIST' | 'ADMIN' | 'ALL' = 'ALL';
@@ -27,6 +39,7 @@ export class UsersTableComponent implements OnInit {
   public currentUserFromDB: Patient | Specialist | Admin | null = null;
   public roles = Roles;
   public userList: Array<Patient | Specialist | Admin> | null = null;
+  public existsUsersFindBySpecialty: boolean = false;
 
   // Finder
   public searchString: string;
@@ -42,6 +55,17 @@ export class UsersTableComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    const { currentUserFromDB } = await this.authService.getCurrentUser();
+    this.currentUserFromDB = currentUserFromDB;
+  }
+
+  async ngOnChanges(changes: SimpleChanges): Promise<void> {
+    if (this.filterBySpecialtyParams) {
+      return this.onFindUserBySpecialty(
+        changes.filterBySpecialtyParams.currentValue
+      );
+    }
+
     switch (this.filter) {
       case 'ALL':
         this.userService.getAllUsers().subscribe((userList) => {
@@ -77,9 +101,6 @@ export class UsersTableComponent implements OnInit {
         );
         break;
     }
-
-    const { currentUserFromDB } = await this.authService.getCurrentUser();
-    this.currentUserFromDB = currentUserFromDB;
   }
 
   filterByInputValue() {
@@ -143,5 +164,22 @@ export class UsersTableComponent implements OnInit {
       confirmParams: { title: 'Usuario eliminado con éxito' },
     });
     if (confirm) this.userService.deleteUser(user.uid);
+  }
+
+  async onFindUserBySpecialty(specialty: { id: string; name: string }) {
+    const result = await this.userService.getUsersBySpecialty(specialty);
+
+    result.subscribe((usersBySpecialty) => {
+      if (usersBySpecialty.length === 0) {
+        this.existsUsersFindBySpecialty = true;
+        this.userList = [];
+        this.copyList = [];
+        this.onSelectUser.emit(undefined);
+      } else {
+        this.existsUsersFindBySpecialty = false;
+        this.userList = usersBySpecialty;
+        this.copyList = usersBySpecialty;
+      }
+    });
   }
 }

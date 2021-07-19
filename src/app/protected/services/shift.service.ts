@@ -39,6 +39,24 @@ export class ShiftService {
       );
   }
 
+  public async getShiftsByEmail(email: string) {
+    return this.afs
+      .collection(this.nameCollectionDB, (ref) =>
+        ref.where('specialist.email', '==', email)
+      )
+      .snapshotChanges()
+      .pipe(
+        map((actions: any) =>
+          actions.map((a: any) => {
+            const data = a.payload.doc.data() as object;
+            const uid = a.payload.doc.id;
+
+            return { uid, ...data };
+          })
+        )
+      );
+  }
+
   public generateShiftsByArray(
     weekDays: any,
     formFields: any,
@@ -49,7 +67,8 @@ export class ShiftService {
     const selectedDays = parsedSelectedDatesInForm(weekDays, days);
     const now = new Date();
 
-    for (let index = 0; index < 29; index++) {
+    // for (let index = 0; index < 29; index++) {
+    for (let index = 0; index < 5; index++) {
       const updatedDateNow = addDays(now, index);
 
       for (const day of selectedDays) {
