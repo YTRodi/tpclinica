@@ -1,6 +1,6 @@
 <div class="container py-4">
   <div class="row">
-    <div class="col">
+    <div class="col-md-6">
       <div class="p-3 rounded-3">
         <h2>Especialidad</h2>
         <app-specialty-finder
@@ -10,13 +10,13 @@
       </div>
     </div>
 
-    <div class="col">
+    <div class="col-md-6">
       <div class="p-3 rounded-3">
         <h2>Especialista</h2>
 
         <app-users-table
           *ngIf="this.selectedSpecialty"
-          (onSelectUser)="this.setSelectedUser($event)"
+          (onSelectUser)="this.setSelectedSpecialist($event)"
           [filterBySpecialtyParams]="this.selectedSpecialty"
           [filter]="'SPECIALIST'"
           [eneabledFinder]="true"
@@ -33,39 +33,54 @@
         </div>
       </div>
     </div>
+  </div>
 
-    <div class="col">
-      <!-- <div class="row">
-        <div class="col">
-          <h2>Día</h2>
-        </div>
+  <div class="row">
+    <div class="col-md-6">
+      <div class="p-3 rounded-3">
+        <h2>Paciente</h2>
+
+        <app-users-table
+          (onSelectUser)="this.setSelectedPatient($event)"
+          [filter]="'PATIENT'"
+          [eneabledFinder]="true"
+          [showInputFinder]="true"
+          [showCountList]="false"
+          [showActiveButton]="false"
+          [showDeleteButton]="false"
+          [showRole]="true"
+          [showStatusAccount]="false"
+        ></app-users-table>
       </div>
+    </div>
 
-      <div class="row">
-        <div class="col">
-          <h2>Horario</h2>
-        </div>
-      </div> -->
-
-      <div class="p-3 text-white bg-dark rounded-3">
-        <h2>Día</h2>
-        <div *ngIf="!this.selectedUser">
-          Selecciona un especialista para ver sus días...
+    <div class="col-md-6">
+      <div class="p-3 rounded-3">
+        <h2>Día y horario</h2>
+        <div *ngIf="!this.selectedSpecialist">
+          Selecciona un especialista para ver sus días y horarios
         </div>
 
-        <div *ngIf="this.selectedUser">
-          <!-- {{ this.selectedUser | json }} -->
-        </div>
-      </div>
-
-      <div class="p-3 text-white bg-dark rounded-3">
-        <h2>Horario</h2>
-        <div *ngIf="!this.selectedUser">
-          Selecciona un especialista para ver sus horarios...
+        <div *ngIf="this.selectedSpecialist && this.shifts" class="row">
+          <div class="col">
+            <button
+              *ngFor="let shift of this.shifts"
+              class="btn btn-outline-primary"
+              [ngClass]="{ active: this.selectedShift?.uid === shift.uid }"
+              (click)="this.setSelectedShift(shift)"
+            >
+              {{ formatShift(shift) }}
+            </button>
+          </div>
         </div>
       </div>
     </div>
   </div>
+
+  <pre>
+    Dia y horario seleccionado (SHIFT):
+    {{ this.selectedShift?.day | json }}
+  </pre>
 
   <pre>
     Especialidad seleccionada:
@@ -73,8 +88,13 @@
   </pre>
 
   <pre>
-    Usuario seleccionad:
-    {{ this.selectedUser | json }}
+    Espcecialista seleccionado:
+    {{ this.selectedSpecialist | json }}
+  </pre>
+
+  <pre>
+    Paciente seleccionado:
+    {{ this.selectedPatient | json }}
   </pre>
 
   <!-- TABLA -->

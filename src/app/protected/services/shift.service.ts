@@ -94,7 +94,7 @@ export class ShiftService {
 
               const newShiftWith30MoreMinutes: Shift = {
                 ...newShift,
-                day: updatedResult,
+                day: updatedResult.toString(),
               };
 
               this.addShift(newShiftWith30MoreMinutes);

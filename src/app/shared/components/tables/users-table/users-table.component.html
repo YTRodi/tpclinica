@@ -32,7 +32,15 @@
       type="text"
       class="form-control"
       [(ngModel)]="this.searchString"
-      placeholder="Buscar especialista"
+      [placeholder]="
+        this.filter === 'SPECIALIST'
+          ? 'Buscar especialista'
+          : this.filter === 'PATIENT'
+          ? 'Buscar paciente'
+          : this.filter === 'ADMIN'
+          ? 'Buscar admin'
+          : 'Buscar usuario'
+      "
       (keyup)="this.filterByInputValue()"
     />
   </div>

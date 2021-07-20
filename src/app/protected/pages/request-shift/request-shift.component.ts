@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { SpecialtyI } from 'src/app/auth/interfaces/specialty';
+import { Shift } from 'src/app/interfaces/shift.interface';
 import { Admin, Patient, Specialist } from 'src/app/interfaces/entities';
+import { ShiftService } from '../../services/shift.service';
+import { formatShift } from 'src/app/helpers/shift';
 
 @Component({
   selector: 'app-request-shift',
@@ -9,9 +12,12 @@ import { Admin, Patient, Specialist } from 'src/app/interfaces/entities';
 })
 export class RequestShiftComponent implements OnInit {
   public selectedSpecialty: SpecialtyI | null = null;
-  public selectedUser: Patient | Specialist | Admin | null = null;
+  public selectedSpecialist: Patient | Specialist | Admin | null = null;
+  public selectedPatient: Patient | Specialist | Admin | null = null;
+  public shifts: Shift[] | null = null;
+  public selectedShift: Shift | null = null;
 
-  constructor() {}
+  constructor(private shiftService: ShiftService) {}
 
   ngOnInit(): void {}
 
@@ -19,13 +25,40 @@ export class RequestShiftComponent implements OnInit {
     this.selectedSpecialty = specialty;
   }
 
-  setSelectedUser(user: Patient | Specialist | Admin) {
-    this.selectedUser = user;
+  async setSelectedSpecialist(specialist: Patient | Specialist | Admin) {
+    this.selectedSpecialist = specialist;
+
+    if (this.selectedSpecialist) {
+      const result = await this.shiftService.getShiftsByEmail(
+        this.selectedSpecialist.email
+      );
+
+      result.subscribe((shifts: Shift[]) => {
+        const orderedShifts = shifts.sort((a: Shift, b: Shift) => {
+          const dateA = new Date(a.day).getTime();
+          const dateB = new Date(b.day).getTime();
+
+          return dateA - dateB;
+        });
+
+        this.shifts = orderedShifts;
+      });
+    }
   }
 
-  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
-  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
-  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
-  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
-  // TODO: Me falta la parte de día y horarios... (formatear el día y el horario delos turnos disponibles (status: AVAILABLE) por especialista seleccionado)
+  setSelectedPatient(patient: Patient | Specialist | Admin) {
+    this.selectedPatient = patient;
+  }
+
+  setSelectedShift(shift: Shift) {
+    this.selectedShift = shift;
+  }
+
+  formatShift(shift: Shift): string {
+    return formatShift(shift);
+  }
+
+  // TODO: dia y horario: falta traerme los que tienen el status available
+  // TODO: dia y horario: falta traerme los que tienen el status available
+  // TODO: dia y horario: falta traerme los que tienen el status available
 }
