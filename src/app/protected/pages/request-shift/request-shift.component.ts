@@ -4,6 +4,7 @@ import { Shift } from 'src/app/interfaces/shift.interface';
 import { Admin, Patient, Specialist } from 'src/app/interfaces/entities';
 import { ShiftService } from '../../services/shift.service';
 import { formatShift } from 'src/app/helpers/shift';
+import { ShiftStatus } from 'src/app/constants/shifts';
 
 @Component({
   selector: 'app-request-shift',
@@ -34,14 +35,16 @@ export class RequestShiftComponent implements OnInit {
       );
 
       result.subscribe((shifts: Shift[]) => {
-        const orderedShifts = shifts.sort((a: Shift, b: Shift) => {
-          const dateA = new Date(a.day).getTime();
-          const dateB = new Date(b.day).getTime();
+        const updatedShifts = shifts
+          .filter((shift) => shift.status === ShiftStatus.AVAILABLE)
+          .sort((a: Shift, b: Shift) => {
+            const dateA = new Date(a.day).getTime();
+            const dateB = new Date(b.day).getTime();
 
-          return dateA - dateB;
-        });
+            return dateA - dateB;
+          });
 
-        this.shifts = orderedShifts;
+        this.shifts = updatedShifts;
       });
     }
   }
@@ -61,4 +64,6 @@ export class RequestShiftComponent implements OnInit {
   // TODO: dia y horario: falta traerme los que tienen el status available
   // TODO: dia y horario: falta traerme los que tienen el status available
   // TODO: dia y horario: falta traerme los que tienen el status available
+
+  // TODO: Cuando actualice el documento del turno que voy a crear (agregarle el paciente), tengo que cambiar el status
 }
