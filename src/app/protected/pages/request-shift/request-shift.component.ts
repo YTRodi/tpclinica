@@ -5,6 +5,7 @@ import { Admin, Patient, Specialist } from 'src/app/interfaces/entities';
 import { ShiftService } from '../../services/shift.service';
 import { formatShift } from 'src/app/helpers/shift';
 import { ShiftStatus } from 'src/app/constants/shifts';
+import { isPast, parseISO } from 'date-fns';
 
 @Component({
   selector: 'app-request-shift',
@@ -16,17 +17,20 @@ export class RequestShiftComponent implements OnInit {
   public selectedSpecialist: Patient | Specialist | Admin | null = null;
   public selectedPatient: Patient | Specialist | Admin | null = null;
   public shifts: Shift[] | null = null;
+  public updatedShifts: Shift[] | null = null;
   public selectedShift: Shift | null = null;
 
   constructor(private shiftService: ShiftService) {}
 
-  ngOnInit(): void {}
+  ngOnInit(): void {
+    this.shiftService.autoUpdateShifts();
+  }
 
   setSelectedSpecialty(specialty: SpecialtyI) {
     this.selectedSpecialty = specialty;
   }
 
-  async setSelectedSpecialist(specialist: Patient | Specialist | Admin) {
+  async setSelectedSpecialist(specialist: Patient | Specialist | Admin | null) {
     this.selectedSpecialist = specialist;
 
     if (this.selectedSpecialist) {
@@ -49,7 +53,7 @@ export class RequestShiftComponent implements OnInit {
     }
   }
 
-  setSelectedPatient(patient: Patient | Specialist | Admin) {
+  setSelectedPatient(patient: Patient | Specialist | Admin | null) {
     this.selectedPatient = patient;
   }
 
@@ -57,13 +61,39 @@ export class RequestShiftComponent implements OnInit {
     this.selectedShift = shift;
   }
 
-  formatShift(shift: Shift): string {
-    return formatShift(shift);
-  }
+  /**
+   * Como filtrar los turnos disponibles en los siguientes 15 días? fácil...
+   * hago un const fechaEnQuinceDias = addDays(new Date(), 15);
+   * luego filtrar los shifts.day que me traigo de la DB, tienen que ser menor o igual a la variable fechaEnQuinceDias
+   *
+   * Y AGREGARLE que el weekDay empieza los días lunes, NO LOS DOMINGOS.
+   */
 
+  /**
+   * Cartel de erro cuando no hay dias y horarios disponibles para esa especialidad y especialista.
+   */
+
+  // #-1 (OK)
+  // TODO: ordenar las especialidades por orden alfabético
+
+  // #0 - OK
+  // TODO: cada que se renderee este componente, que se actualicen los shifts (si pasaron, que se cambien de estado a status UNAVAILABLE), se puede?...
+
+  // #1
+  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
+  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
+  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
+  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
+  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
+
+  // #2
   // TODO: dia y horario: falta traerme los que tienen el status available
   // TODO: dia y horario: falta traerme los que tienen el status available
   // TODO: dia y horario: falta traerme los que tienen el status available
 
-  // TODO: Cuando actualice el documento del turno que voy a crear (agregarle el paciente), tengo que cambiar el status
+  // #3
+  // TODO: Cuando actualice el documento del shift que voy a crear (agregarle el paciente), tengo que cambiar el status
+  // TODO: Cuando actualice el documento del shift que voy a crear (agregarle el paciente), tengo que cambiar el status
+  // TODO: Cuando actualice el documento del shift que voy a crear (agregarle el paciente), tengo que cambiar el status
+  // TODO: Cuando actualice el documento del shift que voy a crear (agregarle el paciente), tengo que cambiar el status
 }

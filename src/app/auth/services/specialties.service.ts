@@ -22,7 +22,7 @@ export class SpecialtiesService {
 
   public getAllSpecialties(): Observable<SpecialtyI[]> {
     return this.afs
-      .collection(this.nameCollectionDB)
+      .collection(this.nameCollectionDB, (ref) => ref.orderBy('name', 'asc'))
       .snapshotChanges()
       .pipe(
         map((actions) =>

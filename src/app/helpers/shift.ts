@@ -1,4 +1,5 @@
 import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 import { Shift } from '../interfaces/shift.interface';
 
 export const parsedSelectedDatesInForm = (
@@ -11,4 +12,4 @@ export const parsedSelectedDatesInForm = (
 };
 
 export const formatShift = (shift: Shift) =>
-  format(new Date(shift.day), 'EEE dd - HH:mm');
+  format(new Date(shift.day), 'EEEE dd MMMM - HH:mm', { locale: es });

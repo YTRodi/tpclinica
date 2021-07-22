@@ -35,7 +35,7 @@ export class UsersTableComponent implements OnInit, OnChanges {
   @Input() showRole: boolean = true;
   @Input() title: string = 'usuarios';
   @Input() filter: 'PATIENT' | 'SPECIALIST' | 'ADMIN' | 'ALL' = 'ALL';
-  @Output() onSelectUser: EventEmitter<Patient | Specialist | Admin>;
+  @Output() onSelectUser: EventEmitter<Patient | Specialist | Admin | null>;
   public currentUserFromDB: Patient | Specialist | Admin | null = null;
   public roles = Roles;
   public userList: Array<Patient | Specialist | Admin> | null = null;
@@ -44,13 +44,13 @@ export class UsersTableComponent implements OnInit, OnChanges {
   // Finder
   public searchString: string;
   public copyList: Array<Patient | Specialist | Admin> | null = null;
-  public selectedUser: any;
+  public selectedUser: Patient | Specialist | Admin | null = null;
 
   constructor(
     private authService: AuthService,
     private userService: UserService
   ) {
-    this.onSelectUser = new EventEmitter<Patient | Specialist | Admin>();
+    this.onSelectUser = new EventEmitter<Patient | Specialist | Admin | null>();
     this.searchString = '';
   }
 
@@ -126,8 +126,13 @@ export class UsersTableComponent implements OnInit, OnChanges {
   }
 
   async selectUser(selectedUser: Patient | Specialist | Admin) {
-    this.onSelectUser.emit(selectedUser);
-    this.selectedUser = selectedUser;
+    if (this.selectedUser && this.selectedUser.uid === selectedUser.uid) {
+      this.onSelectUser.emit(null);
+      this.selectedUser = null;
+    } else {
+      this.onSelectUser.emit(selectedUser);
+      this.selectedUser = selectedUser;
+    }
   }
 
   async onActiveUser(user: Patient | Specialist | Admin) {
@@ -174,7 +179,7 @@ export class UsersTableComponent implements OnInit, OnChanges {
         this.existsUsersFindBySpecialty = true;
         this.userList = [];
         this.copyList = [];
-        this.onSelectUser.emit(undefined);
+        this.onSelectUser.emit(null);
       } else {
         this.existsUsersFindBySpecialty = false;
         this.userList = usersBySpecialty;

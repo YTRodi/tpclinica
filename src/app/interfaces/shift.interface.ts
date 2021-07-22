@@ -1,8 +1,8 @@
 import { Patient, Specialist } from './entities';
 
 export interface Shift {
-  uid?: string;
-  day: Date | string;
+  id?: string;
+  day: string;
   specialty: string;
   status: string;
   specialist?: Specialist;

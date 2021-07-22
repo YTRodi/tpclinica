@@ -10,7 +10,10 @@ import { SpinnerComponent } from './components/spinner/spinner.component';
 import { PatientFormComponent } from './components/patient-form/patient-form.component';
 import { SpecialistFormComponent } from './components/specialist-form/specialist-form.component';
 import { AdminFormComponent } from './components/admin-form/admin-form.component';
+
+// Tables
 import { UsersTableComponent } from './components/tables/users-table/users-table.component';
+import { ShiftScheduleTableComponent } from './components/tables/shift-schedule-table/shift-schedule-table.component';
 
 // Autocomplete
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
@@ -34,6 +37,7 @@ import { SpecialtyFinderComponent } from './components/finders/specialty-finder/
     ListComponent,
     SearchBarComponent,
     SpecialtyFinderComponent,
+    ShiftScheduleTableComponent,
   ],
   imports: [
     CommonModule,
@@ -51,6 +55,7 @@ import { SpecialtyFinderComponent } from './components/finders/specialty-finder/
     SearchBarComponent,
     // Tables
     UsersTableComponent,
+    ShiftScheduleTableComponent,
     // Finders
     SpecialtyFinderComponent,
   ],

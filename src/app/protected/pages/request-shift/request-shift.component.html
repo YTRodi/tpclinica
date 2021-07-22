@@ -61,18 +61,21 @@
           Selecciona un especialista para ver sus días y horarios
         </div>
 
-        <div *ngIf="this.selectedSpecialist && this.shifts" class="row">
-          <div class="col">
-            <button
-              *ngFor="let shift of this.shifts"
-              class="btn btn-outline-primary"
-              [ngClass]="{ active: this.selectedShift?.uid === shift.uid }"
-              (click)="this.setSelectedShift(shift)"
-            >
-              {{ formatShift(shift) }}
-            </button>
-          </div>
-        </div>
+        <app-shift-schedule-table
+          *ngIf="this.selectedSpecialist"
+          [shifts]="this.shifts"
+        ></app-shift-schedule-table>
+        <!-- <app-users-table
+          (onSelectUser)="this.setSelectedPatient($event)"
+          [filter]="'PATIENT'"
+          [eneabledFinder]="true"
+          [showInputFinder]="true"
+          [showCountList]="false"
+          [showActiveButton]="false"
+          [showDeleteButton]="false"
+          [showRole]="true"
+          [showStatusAccount]="false"
+        ></app-users-table> -->
       </div>
     </div>
   </div>

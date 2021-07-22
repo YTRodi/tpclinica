@@ -4,7 +4,7 @@ import {
   AngularFirestore,
   AngularFirestoreDocument,
 } from '@angular/fire/firestore';
-import { addDays, getDay, set } from 'date-fns';
+import { addDays, getDay, isPast, set } from 'date-fns';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ShiftStatus } from 'src/app/constants/shifts';
@@ -23,14 +23,14 @@ export class ShiftService {
     this.shiftsCollection = afs.collection<any[]>(this.nameCollectionDB);
   }
 
-  public getAllShifts(): Observable<any[]> {
+  public getAllShifts(): Observable<Shift[]> {
     return this.afs
       .collection(this.nameCollectionDB)
       .snapshotChanges()
       .pipe(
         map((actions) =>
           actions.map((a) => {
-            const data = a.payload.doc.data() as object;
+            const data = a.payload.doc.data() as Shift;
             const id = a.payload.doc.id;
 
             return { id, ...data };
@@ -41,8 +41,12 @@ export class ShiftService {
 
   public async getShiftsByEmail(email: string) {
     return this.afs
-      .collection(this.nameCollectionDB, (ref) =>
-        ref.where('specialist.email', '==', email)
+      .collection(
+        this.nameCollectionDB,
+        (ref) => ref.where('specialist.email', '==', email)
+
+        // TODO: probar el limit!!!
+        // .limit(15)
       )
       .snapshotChanges()
       .pipe(
@@ -67,8 +71,8 @@ export class ShiftService {
     const selectedDays = parsedSelectedDatesInForm(weekDays, days);
     const now = new Date();
 
-    // for (let index = 0; index < 29; index++) {
-    for (let index = 0; index < 5; index++) {
+    for (let index = 0; index < 29; index++) {
+      // for (let index = 0; index < 5; index++) {
       const updatedDateNow = addDays(now, index);
 
       for (const day of selectedDays) {
@@ -110,7 +114,24 @@ export class ShiftService {
   }
 
   public async updateShiftData(shift: Shift) {
-    this.itemDoc = this.afs.doc(`shifts/${shift.uid}`);
+    this.itemDoc = this.afs.doc(`shifts/${shift.id}`);
     this.itemDoc.update(shift);
+  }
+
+  public async autoUpdateShifts() {
+    this.getAllShifts().subscribe((allShifts: Shift[]) => {
+      allShifts.forEach((shift: Shift): any => {
+        const parsedShiftDay = new Date(shift.day);
+
+        if (isPast(parsedShiftDay) && shift.status === ShiftStatus.AVAILABLE) {
+          const updatedShift: Shift = {
+            ...shift,
+            status: ShiftStatus.UNAVAILABLE,
+          };
+
+          return this.updateShiftData(updatedShift);
+        }
+      });
+    });
   }
 }
