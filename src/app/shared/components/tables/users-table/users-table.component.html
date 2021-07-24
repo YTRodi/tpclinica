@@ -45,7 +45,11 @@
     />
   </div>
 
-  <div class="overflow-auto" style="height: 310px">
+  <div
+    *ngIf="this.copyList"
+    class="overflow-auto"
+    [ngClass]="{ defaultTableHeight: this.copyList.length > 4 }"
+  >
     <ul class="list-group">
       <li
         class="

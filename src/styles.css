@@ -44,3 +44,14 @@
   justify-content: center;
   align-items: center;
 }
+
+/* table height */
+/* Users table */
+.defaultTableHeight {
+  height: 300px;
+}
+
+/* shift schedule table, specialty finder */
+.variantDefaultTableHeight {
+  height: 180px;
+}

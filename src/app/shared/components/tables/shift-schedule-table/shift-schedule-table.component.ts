@@ -58,13 +58,16 @@ export class ShiftScheduleTableComponent implements OnInit, OnChanges {
   }
 
   async selectShift(selectedShift: Shift) {
-    if (this.selectedShift && this.selectedShift.id === selectedShift.id) {
-      this.onSelectShift.emit(null);
-      this.selectedShift = null;
-    } else {
-      this.onSelectShift.emit(selectedShift);
-      this.selectedShift = selectedShift;
-    }
+    this.selectedShift = selectedShift;
+    this.onSelectShift.emit(this.selectedShift);
+
+    // if (this.selectedShift && this.selectedShift.id === selectedShift.id) {
+    //   this.onSelectShift.emit(null);
+    //   this.selectedShift = null;
+    // } else {
+    //   this.selectedShift = selectedShift;
+    //   this.onSelectShift.emit(this.selectedShift);
+    // }
   }
 
   formatShift(shift: Shift): string {

@@ -5,7 +5,7 @@ import { Admin, Patient, Specialist } from 'src/app/interfaces/entities';
 import { ShiftService } from '../../services/shift.service';
 import { formatShift } from 'src/app/helpers/shift';
 import { ShiftStatus } from 'src/app/constants/shifts';
-import { isPast, parseISO } from 'date-fns';
+import { addDays, isPast, parseISO } from 'date-fns';
 
 @Component({
   selector: 'app-request-shift',
@@ -39,8 +39,16 @@ export class RequestShiftComponent implements OnInit {
       );
 
       result.subscribe((shifts: Shift[]) => {
+        const today = new Date();
+        // De hoy a 15 días al futuro.
+        const dateIn15Days = addDays(today, 15).getTime();
+
         const updatedShifts = shifts
-          .filter((shift) => shift.status === ShiftStatus.AVAILABLE)
+          .filter(
+            (shift: Shift) =>
+              shift.status === ShiftStatus.AVAILABLE &&
+              new Date(shift.day).getTime() < dateIn15Days
+          )
           .sort((a: Shift, b: Shift) => {
             const dateA = new Date(a.day).getTime();
             const dateB = new Date(b.day).getTime();
@@ -57,9 +65,18 @@ export class RequestShiftComponent implements OnInit {
     this.selectedPatient = patient;
   }
 
-  setSelectedShift(shift: Shift) {
+  setSelectedShift(shift: Shift | null) {
     this.selectedShift = shift;
   }
+
+  /**
+   * Use cases:
+   * Debo mostrar el especialista si no tiene turnos para esa especialidad?
+   */
+
+  /**
+   * Mostrar los shifts con separador por fechas. (array reduce tipo gravy calendar view)
+   */
 
   /**
    * Como filtrar los turnos disponibles en los siguientes 15 días? fácil...
@@ -70,7 +87,7 @@ export class RequestShiftComponent implements OnInit {
    */
 
   /**
-   * Cartel de erro cuando no hay dias y horarios disponibles para esa especialidad y especialista.
+   * Cartel de error cuando no hay dias y horarios disponibles para esa especialidad y especialista.
    */
 
   // #-1 (OK)
@@ -79,14 +96,14 @@ export class RequestShiftComponent implements OnInit {
   // #0 - OK
   // TODO: cada que se renderee este componente, que se actualicen los shifts (si pasaron, que se cambien de estado a status UNAVAILABLE), se puede?...
 
-  // #1
+  // #1 - OK
   // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
   // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
   // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
   // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
   // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
 
-  // #2
+  // #2 - OK
   // TODO: dia y horario: falta traerme los que tienen el status available
   // TODO: dia y horario: falta traerme los que tienen el status available
   // TODO: dia y horario: falta traerme los que tienen el status available

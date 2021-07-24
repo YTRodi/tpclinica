@@ -1,7 +1,7 @@
 <div class="container py-4">
   <div class="row">
-    <div class="col-md-6">
-      <div class="p-3 rounded-3">
+    <div class="col-md-6 my-3">
+      <div class="rounded-3">
         <h2>Especialidad</h2>
         <app-specialty-finder
           [showAddItem]="true"
@@ -10,8 +10,8 @@
       </div>
     </div>
 
-    <div class="col-md-6">
-      <div class="p-3 rounded-3">
+    <div class="col-md-6 my-3">
+      <div class="rounded-3">
         <h2>Especialista</h2>
 
         <app-users-table
@@ -36,8 +36,8 @@
   </div>
 
   <div class="row">
-    <div class="col-md-6">
-      <div class="p-3 rounded-3">
+    <div class="col my-3">
+      <div class="rounded-3">
         <h2>Paciente</h2>
 
         <app-users-table
@@ -54,8 +54,8 @@
       </div>
     </div>
 
-    <div class="col-md-6">
-      <div class="p-3 rounded-3">
+    <div class="col my-3">
+      <div class="rounded-3">
         <h2>Día y horario</h2>
         <div *ngIf="!this.selectedSpecialist">
           Selecciona un especialista para ver sus días y horarios
@@ -64,25 +64,15 @@
         <app-shift-schedule-table
           *ngIf="this.selectedSpecialist"
           [shifts]="this.shifts"
+          (onSelectShift)="this.setSelectedShift($event)"
         ></app-shift-schedule-table>
-        <!-- <app-users-table
-          (onSelectUser)="this.setSelectedPatient($event)"
-          [filter]="'PATIENT'"
-          [eneabledFinder]="true"
-          [showInputFinder]="true"
-          [showCountList]="false"
-          [showActiveButton]="false"
-          [showDeleteButton]="false"
-          [showRole]="true"
-          [showStatusAccount]="false"
-        ></app-users-table> -->
       </div>
     </div>
   </div>
 
   <pre>
     Dia y horario seleccionado (SHIFT):
-    {{ this.selectedShift?.day | json }}
+    {{ this.selectedShift | json }}
   </pre>
 
   <pre>

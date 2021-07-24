@@ -41,21 +41,17 @@ export class ShiftService {
 
   public async getShiftsByEmail(email: string) {
     return this.afs
-      .collection(
-        this.nameCollectionDB,
-        (ref) => ref.where('specialist.email', '==', email)
-
-        // TODO: probar el limit!!!
-        // .limit(15)
+      .collection(this.nameCollectionDB, (ref) =>
+        ref.where('specialist.email', '==', email)
       )
       .snapshotChanges()
       .pipe(
         map((actions: any) =>
           actions.map((a: any) => {
             const data = a.payload.doc.data() as object;
-            const uid = a.payload.doc.id;
+            const id = a.payload.doc.id;
 
-            return { uid, ...data };
+            return { id, ...data };
           })
         )
       );

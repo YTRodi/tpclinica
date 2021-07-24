@@ -24,6 +24,9 @@ import { SearchBarComponent } from './components/search-bar/search-bar.component
 // Finders
 import { SpecialtyFinderComponent } from './components/finders/specialty-finder/specialty-finder.component';
 
+// Card
+import { EmptyCardComponent } from './components/cards/empty-card/empty-card.component';
+
 @NgModule({
   declarations: [
     // Forms
@@ -38,6 +41,7 @@ import { SpecialtyFinderComponent } from './components/finders/specialty-finder/
     SearchBarComponent,
     SpecialtyFinderComponent,
     ShiftScheduleTableComponent,
+    EmptyCardComponent,
   ],
   imports: [
     CommonModule,
@@ -58,6 +62,8 @@ import { SpecialtyFinderComponent } from './components/finders/specialty-finder/
     ShiftScheduleTableComponent,
     // Finders
     SpecialtyFinderComponent,
+    // Cards
+    EmptyCardComponent,
   ],
 })
 export class SharedModule {}

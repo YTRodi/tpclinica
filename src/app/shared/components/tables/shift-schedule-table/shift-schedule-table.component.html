@@ -23,51 +23,20 @@
     />
   </div>
 
-  <div class="overflow-auto" style="height: 310px">
-    <ul class="list-group">
-      <li
-        class="
-          list-group-item list-group-item-action
-          d-flex
-          justify-content-between
-          align-items-center
-        "
-        style="cursor: pointer"
-        [ngClass]="{ active: this.selectedShift?.id === shift.id }"
+  <div *ngIf="this.copyList" class="overflow-auto variantDefaultTableHeight">
+    <div class="list-group">
+      <button
         *ngFor="let shift of this.copyList"
+        class="list-group-item list-group-item-action"
+        [ngClass]="{ active: this.selectedShift?.id === shift.id }"
         (click)="this.selectShift(shift)"
       >
-        <div
-          class="d-flex justify-content-start align-items-center"
-          style="flex: 1"
-        >
-          <div>
-            {{ formatShift(shift) }}
-            <!-- <div [ngSwitch]="user.role" *ngIf="this.showRole">
-              <small class="text-muted" *ngSwitchCase="this.roles.PATIENT">
-                Paciente
-              </small>
-              <small class="text-muted" *ngSwitchCase="this.roles.SPECIALIST">
-                Especialista
-              </small>
-              <small class="text-muted" *ngSwitchCase="this.roles.ADMIN">
-                Admin
-              </small>
-            </div>
-
-            <h6 class="my-0">{{ user.firstName }} {{ user.lastName }}</h6>
-            <h6 class="my-0">{{ user.email }}</h6>
-            <small *ngIf="this.showStatusAccount">
-              Estado de cuenta: {{ user.active ? "aprobado" : "pendiente" }}
-            </small>
-          </div> -->
-          </div>
-        </div>
-      </li>
+        <h6 class="my-0">{{ formatShift(shift) }}</h6>
+      </button>
 
       <span *ngIf="this.copyList?.length === 0" class="list-group-item">
-        No existe el usuario
+        No hay horarios disponibles para esta fecha y horario
       </span>
-    </ul>
+    </div>
   </div>
 </div>

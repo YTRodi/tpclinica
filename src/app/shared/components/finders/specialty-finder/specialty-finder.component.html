@@ -54,14 +54,12 @@
 
   <!-- List -->
   <div
-    class="overflow-auto"
-    style="height: 185px"
-    *ngIf="!this.eneableAddNewSpecialty"
+    *ngIf="this.copyList && !this.eneableAddNewSpecialty"
+    class="overflow-auto variantDefaultTableHeight"
   >
     <div class="list-group">
       <button
         *ngFor="let specialty of this.copyList"
-        type="button"
         class="list-group-item list-group-item-action"
         [ngClass]="{ active: this.selectedSpecialty?.id === specialty.id }"
         (click)="this.selectSpecialty(specialty)"

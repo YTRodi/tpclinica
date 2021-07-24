@@ -109,7 +109,7 @@ export class ScheduleCardComponent implements OnInit {
 
       successNotification({
         title: 'La disponibilidad fue seteada con éxito!',
-        text: 'Se han generaron turnos de hoy a 21 días',
+        text: 'Se han generaron turnos de hoy a 29 días',
       });
     } catch (error) {
       errorNotification({ text: error.message });
