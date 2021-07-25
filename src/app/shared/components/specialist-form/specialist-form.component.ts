@@ -141,6 +141,8 @@ export class SpecialistFormComponent implements OnInit {
       active: false,
     };
 
+    console.log(`newSpecialist`, newSpecialist);
+
     try {
       const user = await this.authService.registerWithEmailAndPassword(
         email,

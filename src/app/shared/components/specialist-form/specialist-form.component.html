@@ -103,14 +103,20 @@
         *ngFor="let especialidad of this.specialties.controls; let i = index"
       >
         <div class="row mt-3">
-          <div class="input-group">
-            <app-finder
-              class="form-control"
+          <div class="input-group mb-3">
+            <ng-autocomplete
+              style="width: 280px"
               [formControlName]="i"
               [placeholder]="'Especialidad #' + (i + 1)"
               [data]="this.listSpecialties"
               [searchKeyword]="'name'"
-            ></app-finder>
+              [itemTemplate]="itemTemplate"
+            >
+            </ng-autocomplete>
+
+            <ng-template #itemTemplate let-item>
+              <a [innerHTML]="item.name"></a>
+            </ng-template>
 
             <button
               *ngIf="i !== 0"

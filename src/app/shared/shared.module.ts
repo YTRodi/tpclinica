@@ -1,7 +1,12 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
+import {
+  RecaptchaModule,
+  RecaptchaFormsModule,
+  RECAPTCHA_SETTINGS,
+  RecaptchaSettings,
+} from 'ng-recaptcha';
 
 // Components
 import { SpinnerComponent } from './components/spinner/spinner.component';
@@ -17,7 +22,6 @@ import { ShiftScheduleTableComponent } from './components/tables/shift-schedule-
 
 // Autocomplete
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
-import { FinderComponent } from './components/finder/finder.component';
 import { ListComponent } from './components/list/list.component';
 import { SearchBarComponent } from './components/search-bar/search-bar.component';
 
@@ -36,7 +40,6 @@ import { EmptyCardComponent } from './components/cards/empty-card/empty-card.com
     // Components
     SpinnerComponent,
     UsersTableComponent,
-    FinderComponent,
     ListComponent,
     SearchBarComponent,
     SpecialtyFinderComponent,
@@ -64,6 +67,14 @@ import { EmptyCardComponent } from './components/cards/empty-card/empty-card.com
     SpecialtyFinderComponent,
     // Cards
     EmptyCardComponent,
+  ],
+  providers: [
+    {
+      provide: RECAPTCHA_SETTINGS,
+      useValue: {
+        siteKey: '6LeKtL0bAAAAADm-MRgnVAN-Q761n8uP7_TmVVEe',
+      } as RecaptchaSettings,
+    },
   ],
 })
 export class SharedModule {}

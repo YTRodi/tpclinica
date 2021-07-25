@@ -1,55 +1,55 @@
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import {
+  FormArray,
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
 
 export const getPatientForm = () => {
   return new FormBuilder().group({
-    firstName: new FormControl('Camila', [
+    firstName: new FormControl(null, [
       Validators.required,
       Validators.minLength(2),
     ]),
-    lastName: new FormControl('Roy', [
+    lastName: new FormControl(null, [
       Validators.required,
       Validators.minLength(2),
     ]),
-    age: new FormControl(22, [
+    age: new FormControl(null, [
       Validators.required,
       Validators.min(1),
       Validators.max(99),
     ]),
-    dni: new FormControl(12345678, [
+    dni: new FormControl(null, [
       Validators.required,
       Validators.min(11111111),
       Validators.max(99999999),
     ]),
-    email: new FormControl('camilaroy99@gmail.com', [
-      Validators.required,
-      Validators.email,
-    ]),
-    password: new FormControl('123456', [
+    email: new FormControl(null, [Validators.required, Validators.email]),
+    password: new FormControl(null, [
       Validators.required,
       Validators.minLength(6),
       Validators.maxLength(20),
     ]),
     photo: new FormControl(null, [Validators.required]),
     photo2: new FormControl(null, [Validators.required]),
-    medicalAssistance: new FormControl('Swiss Medical', [
-      Validators.required,
-      Validators.minLength(2),
-    ]),
+    medicalAssistance: new FormControl(null, [Validators.minLength(2)]),
     recaptcha: new FormControl(null, [Validators.required]),
   });
 };
 
 export const getSpecialistForm = () => {
   return new FormBuilder().group({
-    firstName: new FormControl('Camila', [
+    firstName: new FormControl('pepito', [
       Validators.required,
       Validators.minLength(2),
     ]),
-    lastName: new FormControl('Roy', [
+    lastName: new FormControl('allala', [
       Validators.required,
       Validators.minLength(2),
     ]),
-    age: new FormControl(22, [
+    age: new FormControl(12, [
       Validators.required,
       Validators.min(1),
       Validators.max(99),
@@ -59,7 +59,7 @@ export const getSpecialistForm = () => {
       Validators.min(11111111),
       Validators.max(99999999),
     ]),
-    email: new FormControl('camilaroy99@gmail.com', [
+    email: new FormControl('pepito@gmail.com', [
       Validators.required,
       Validators.email,
     ]),
@@ -68,10 +68,43 @@ export const getSpecialistForm = () => {
       Validators.minLength(6),
       Validators.maxLength(20),
     ]),
-    photo: new FormControl(null, [Validators.required]),
-    specialties: new FormBuilder().array([null], [Validators.required]),
+    photo: new FormControl('fotis', [Validators.required]),
+    specialties: new FormArray(
+      [new FormControl('', [Validators.required])],
+      [Validators.required]
+    ),
     recaptcha: new FormControl(null, [Validators.required]),
   });
+
+  // return new FormBuilder().group({
+  //   firstName: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.minLength(2),
+  //   ]),
+  //   lastName: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.minLength(2),
+  //   ]),
+  //   age: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.min(1),
+  //     Validators.max(99),
+  //   ]),
+  //   dni: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.min(11111111),
+  //     Validators.max(99999999),
+  //   ]),
+  //   email: new FormControl(null, [Validators.required, Validators.email]),
+  //   password: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.minLength(6),
+  //     Validators.maxLength(20),
+  //   ]),
+  //   photo: new FormControl(null, [Validators.required]),
+  //   specialties: new FormBuilder().array([null], [Validators.required]),
+  //   recaptcha: new FormControl(null, [Validators.required]),
+  // });
 };
 
 export const getAdminForm = () => {

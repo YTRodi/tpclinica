@@ -116,7 +116,7 @@ export class PatientFormComponent implements OnInit {
       age,
       dni,
       email,
-      medicalAssistance,
+      medicalAssistance: medicalAssistance ? medicalAssistance : null,
       role: Roles.PATIENT,
       active: true,
     };

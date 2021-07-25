@@ -8,7 +8,7 @@
   "
 >
   <div class="row animate__animated animate__fadeIn">
-    <div class="col p-3 border-radius blur">
+    <div class="col p-3 border-radius blur" style="width: 350px">
       <h1 class="text-center">Registro</h1>
 
       <!-- Tipo de usuario -->
@@ -18,6 +18,7 @@
         <div class="container mb-3 d-flex justify-content-around">
           <div class="col img-role">
             <img
+              style="object-fit: cover"
               class="cursor"
               src="../../../../assets/images/patient.jpg"
               alt="patient"
@@ -29,6 +30,7 @@
 
           <div class="col img-role">
             <img
+              style="object-fit: cover"
               class="cursor"
               src="../../../../assets/images/specialist.jpg"
               alt="specialist"
@@ -43,16 +45,20 @@
       <div *ngIf="this.selected">
         <!-- Form Paciente -->
         <div class="row" *ngIf="!this.isSpecialist">
-          <app-patient-form
-            class="animate__animated animate__fadeInLeft"
-          ></app-patient-form>
+          <div class="col">
+            <app-patient-form
+              class="animate__animated animate__fadeInLeft"
+            ></app-patient-form>
+          </div>
         </div>
 
         <!-- Form Especialista -->
         <div class="row" *ngIf="this.isSpecialist">
-          <app-specialist-form
-            class="animate__animated animate__fadeInRight"
-          ></app-specialist-form>
+          <div class="col">
+            <app-specialist-form
+              class="animate__animated animate__fadeInRight"
+            ></app-specialist-form>
+          </div>
         </div>
       </div>
 
