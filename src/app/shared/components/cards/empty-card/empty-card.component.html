@@ -1,1 +1,12 @@
-<p>empty-card works!</p>
+<div style="border: 1px dashed gray" class="rounded-3">
+  <div class="row my-3">
+    <div class="col text-center">
+      <i class="far fa-eye-slash fa-5x" *ngIf="this.icon === 'DEFAULT'"></i>
+      <i class="fas fa-user-slash fa-5x" *ngIf="this.icon === 'USER'"></i>
+    </div>
+  </div>
+
+  <div class="row">
+    <h4 class="col text-center">{{ this.text }}</h4>
+  </div>
+</div>

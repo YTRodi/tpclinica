@@ -1,11 +1,20 @@
 import { Component, OnInit } from '@angular/core';
+import { addDays } from 'date-fns';
 import { SpecialtyI } from 'src/app/auth/interfaces/specialty';
 import { Shift } from 'src/app/interfaces/shift.interface';
 import { Admin, Patient, Specialist } from 'src/app/interfaces/entities';
 import { ShiftService } from '../../services/shift.service';
-import { formatShift } from 'src/app/helpers/shift';
 import { ShiftStatus } from 'src/app/constants/shifts';
-import { addDays, isPast, parseISO } from 'date-fns';
+import { formatConfirmShift } from 'src/app/helpers/shift';
+import { successNotification } from 'src/app/helpers/notifications';
+import {
+  FormBuilder,
+  FormControl,
+  FormGroup,
+  Validators,
+} from '@angular/forms';
+import { AuthService } from 'src/app/auth/services/auth.service';
+import { Roles } from 'src/app/constants/roles';
 
 @Component({
   selector: 'app-request-shift',
@@ -13,27 +22,60 @@ import { addDays, isPast, parseISO } from 'date-fns';
   styleUrls: ['./request-shift.component.css'],
 })
 export class RequestShiftComponent implements OnInit {
+  public currentUserFromDB: Patient | Specialist | Admin | null = null;
+  public requestShiftForm: FormGroup;
   public selectedSpecialty: SpecialtyI | null = null;
   public selectedSpecialist: Patient | Specialist | Admin | null = null;
-  public selectedPatient: Patient | Specialist | Admin | null = null;
+  public selectedPatient: any = null;
   public shifts: Shift[] | null = null;
   public updatedShifts: Shift[] | null = null;
   public selectedShift: Shift | null = null;
 
-  constructor(private shiftService: ShiftService) {}
-
-  ngOnInit(): void {
-    this.shiftService.autoUpdateShifts();
+  constructor(
+    private authService: AuthService,
+    private shiftService: ShiftService,
+    private fb: FormBuilder
+  ) {
+    this.requestShiftForm = this.fb.group({
+      specialty: new FormControl(null, [Validators.required]),
+      specialist: new FormControl(null, [Validators.required]),
+      patient: new FormControl(null, [Validators.required]),
+      shift: new FormControl(null, [Validators.required]),
+    });
   }
 
-  setSelectedSpecialty(specialty: SpecialtyI) {
+  async ngOnInit(): Promise<void> {
+    this.shiftService.autoUpdateShifts();
+
+    const { currentUserFromDB } = await this.authService.getCurrentUser();
+    this.currentUserFromDB = currentUserFromDB;
+
+    if (this.currentUserFromDB) {
+      if (this.currentUserFromDB.role === Roles.PATIENT) {
+        this.setSelectedPatient(this.currentUserFromDB);
+        this.requestShiftForm.patchValue({
+          patient: this.selectedPatient.firstName,
+        });
+      }
+    }
+  }
+
+  setSelectedSpecialty(specialty: SpecialtyI | null) {
     this.selectedSpecialty = specialty;
+    this.setSelectedSpecialist(null);
+    this.requestShiftForm.patchValue({
+      specialty: this.selectedSpecialty?.name,
+    });
   }
 
   async setSelectedSpecialist(specialist: Patient | Specialist | Admin | null) {
     this.selectedSpecialist = specialist;
 
     if (this.selectedSpecialist) {
+      this.requestShiftForm.patchValue({
+        specialist: this.selectedSpecialist.firstName,
+      });
+
       const result = await this.shiftService.getShiftsByEmail(
         this.selectedSpecialist.email
       );
@@ -43,12 +85,17 @@ export class RequestShiftComponent implements OnInit {
         // De hoy a 15 días al futuro.
         const dateIn15Days = addDays(today, 15).getTime();
 
+        const availableCondition = (shift: Shift) =>
+          shift.status === ShiftStatus.AVAILABLE &&
+          new Date(shift.day).getTime() < dateIn15Days;
+
         const updatedShifts = shifts
-          .filter(
-            (shift: Shift) =>
-              shift.status === ShiftStatus.AVAILABLE &&
-              new Date(shift.day).getTime() < dateIn15Days
-          )
+          .filter((shift: Shift) => {
+            return (
+              availableCondition(shift) &&
+              shift.specialty === this.selectedSpecialty?.name
+            );
+          })
           .sort((a: Shift, b: Shift) => {
             const dateA = new Date(a.day).getTime();
             const dateB = new Date(b.day).getTime();
@@ -58,59 +105,46 @@ export class RequestShiftComponent implements OnInit {
 
         this.shifts = updatedShifts;
       });
+    } else {
+      this.requestShiftForm.patchValue({ specialist: null });
+      this.selectedShift = null;
+      this.requestShiftForm.patchValue({ shift: null });
     }
   }
 
   setSelectedPatient(patient: Patient | Specialist | Admin | null) {
     this.selectedPatient = patient;
+    this.requestShiftForm.patchValue({
+      patient: this.selectedPatient.firstName,
+    });
   }
 
   setSelectedShift(shift: Shift | null) {
     this.selectedShift = shift;
+    this.requestShiftForm.patchValue({ shift: this.selectedShift?.day });
   }
 
-  /**
-   * Use cases:
-   * Debo mostrar el especialista si no tiene turnos para esa especialidad?
-   */
+  formatConfirmShift(shift: Shift) {
+    return formatConfirmShift(shift);
+  }
 
-  /**
-   * Mostrar los shifts con separador por fechas. (array reduce tipo gravy calendar view)
-   */
+  onConfirmShift() {
+    const updatedShift: Shift = {
+      ...this.selectedShift!,
+      status: ShiftStatus.PENDING,
+      patient: this.selectedPatient,
+    };
 
-  /**
-   * Como filtrar los turnos disponibles en los siguientes 15 días? fácil...
-   * hago un const fechaEnQuinceDias = addDays(new Date(), 15);
-   * luego filtrar los shifts.day que me traigo de la DB, tienen que ser menor o igual a la variable fechaEnQuinceDias
-   *
-   * Y AGREGARLE que el weekDay empieza los días lunes, NO LOS DOMINGOS.
-   */
+    this.shiftService.updateShiftData(updatedShift);
 
-  /**
-   * Cartel de error cuando no hay dias y horarios disponibles para esa especialidad y especialista.
-   */
+    successNotification({
+      title: 'Estado del turno',
+      text: 'El turno fue solicitado con éxito!',
+    });
 
-  // #-1 (OK)
-  // TODO: ordenar las especialidades por orden alfabético
-
-  // #0 - OK
-  // TODO: cada que se renderee este componente, que se actualicen los shifts (si pasaron, que se cambien de estado a status UNAVAILABLE), se puede?...
-
-  // #1 - OK
-  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
-  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
-  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
-  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
-  // TODO: cambiar el height de los componentes tabla (si hay más de 3 elementos en el array que si tome el height que tiene ahora, sino, que tome el height de los elementos que están.)
-
-  // #2 - OK
-  // TODO: dia y horario: falta traerme los que tienen el status available
-  // TODO: dia y horario: falta traerme los que tienen el status available
-  // TODO: dia y horario: falta traerme los que tienen el status available
-
-  // #3
-  // TODO: Cuando actualice el documento del shift que voy a crear (agregarle el paciente), tengo que cambiar el status
-  // TODO: Cuando actualice el documento del shift que voy a crear (agregarle el paciente), tengo que cambiar el status
-  // TODO: Cuando actualice el documento del shift que voy a crear (agregarle el paciente), tengo que cambiar el status
-  // TODO: Cuando actualice el documento del shift que voy a crear (agregarle el paciente), tengo que cambiar el status
+    this.setSelectedSpecialty(null);
+    this.setSelectedSpecialist(null);
+    this.setSelectedPatient(null);
+    this.setSelectedShift(null);
+  }
 }

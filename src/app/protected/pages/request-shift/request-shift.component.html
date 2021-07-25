@@ -4,7 +4,7 @@
       <div class="rounded-3">
         <h2>Especialidad</h2>
         <app-specialty-finder
-          [showAddItem]="true"
+          [showAddItem]="false"
           (onSelectSpecialty)="this.setSelectedSpecialty($event)"
         ></app-specialty-finder>
       </div>
@@ -36,7 +36,7 @@
   </div>
 
   <div class="row">
-    <div class="col my-3">
+    <div class="col-md-6 my-3" *ngIf="this.currentUserFromDB?.role === 'ADMIN'">
       <div class="rounded-3">
         <h2>Paciente</h2>
 
@@ -54,7 +54,7 @@
       </div>
     </div>
 
-    <div class="col my-3">
+    <div [ngClass]="{ 'col-md-6': this.currentUserFromDB?.role === 'ADMIN' }">
       <div class="rounded-3">
         <h2>Día y horario</h2>
         <div *ngIf="!this.selectedSpecialist">
@@ -70,69 +70,74 @@
     </div>
   </div>
 
-  <pre>
-    Dia y horario seleccionado (SHIFT):
-    {{ this.selectedShift | json }}
-  </pre>
+  <!-- Modal -->
+  <button
+    type="button"
+    class="btn btn-primary w-100 my-3"
+    data-bs-toggle="modal"
+    data-bs-target="#exampleModal"
+    [disabled]="this.requestShiftForm.invalid"
+  >
+    Confirmar turno
+  </button>
 
-  <pre>
-    Especialidad seleccionada:
-    {{ this.selectedSpecialty | json }}
-  </pre>
+  <div
+    class="modal fade"
+    id="exampleModal"
+    tabindex="-1"
+    *ngIf="
+      this.selectedSpecialty &&
+      this.selectedSpecialist &&
+      this.selectedPatient &&
+      this.selectedShift
+    "
+  >
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Detalles del turno</h5>
+          <button class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
 
-  <pre>
-    Espcecialista seleccionado:
-    {{ this.selectedSpecialist | json }}
-  </pre>
-
-  <pre>
-    Paciente seleccionado:
-    {{ this.selectedPatient | json }}
-  </pre>
-
-  <!-- TABLA -->
-  <div class="my-3 animate__animated animate__fadeIn">
-    <h4 class="d-flex justify-content-between align-items-center mb-3">
-      <span class="text-primary">Turnos</span>
-      <span class="badge bg-primary rounded-pill">
-        {{ 3 }}
-      </span>
-    </h4>
-
-    <div class="overflow-auto" style="height: 275px">
-      <ul class="list-group">
-        <li
-          class="
-            list-group-item
-            d-flex
-            justify-content-between
-            align-items-center
-            rounded
-            item
-          "
-        >
-          <div class="d-flex d-flex justify-content-center align-items-center">
-            <img
-              class="me-3 rounded-circle"
-              src="
-                    https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500
-                  "
-              alt="User image"
-              width="55"
-              height="55"
-            />
-            <div>
-              <small class="text-muted">UID </small>
-              <h6 class="my-0">lala</h6>
-              <small class="text-muted"> cupos disponibles </small>
+        <div class="modal-body">
+          <div class="row">
+            <div class="col">
+              Fecha: {{ this.formatConfirmShift(this.selectedShift) }}
             </div>
           </div>
 
-          <span class="text-muted">
-            <button class="btn btn-outline-danger">x</button>
-          </span>
-        </li>
-      </ul>
+          <div class="row">
+            <div class="col">
+              Especialidad: {{ this.selectedSpecialty.name }}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              Especialista: {{ this.selectedSpecialist.firstName }}
+              {{ this.selectedSpecialist.lastName }}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              Paciente: {{ this.selectedPatient.firstName }}
+              {{ this.selectedPatient.lastName }}
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-primary"
+            (click)="this.onConfirmShift()"
+            data-bs-dismiss="modal"
+          >
+            Confirmo
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

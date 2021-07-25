@@ -109,7 +109,7 @@ export class ShiftService {
     return this.shiftsCollection.add(shift);
   }
 
-  public async updateShiftData(shift: Shift) {
+  public updateShiftData(shift: Shift) {
     this.itemDoc = this.afs.doc(`shifts/${shift.id}`);
     this.itemDoc.update(shift);
   }

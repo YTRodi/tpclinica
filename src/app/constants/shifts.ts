@@ -1,8 +1,8 @@
 export enum ShiftStatus {
   AVAILABLE = 'AVAILABLE',
-  UNAVAILABLE = 'UNAVAILABLE',
+  UNAVAILABLE = 'UNAVAILABLE', // Cuando pasó su fecha
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
   CANCELLED = 'CANCELLED',
-  REJECTED = 'REJECTED',
   COMPLETED = 'COMPLETED',
-  // Todo: faltan más estados
 }

@@ -9,7 +9,7 @@ import { SpecialtiesService } from 'src/app/auth/services/specialties.service';
 })
 export class SpecialtyFinderComponent implements OnInit {
   @Input() showAddItem: boolean = false;
-  @Output() onSelectSpecialty: EventEmitter<SpecialtyI>;
+  @Output() onSelectSpecialty: EventEmitter<SpecialtyI | null>;
 
   public specialtiesList: Array<SpecialtyI>;
 
@@ -21,7 +21,7 @@ export class SpecialtyFinderComponent implements OnInit {
   constructor(private specialtiesService: SpecialtiesService) {
     this.searchString = '';
     this.specialtiesList = [];
-    this.onSelectSpecialty = new EventEmitter<SpecialtyI>();
+    this.onSelectSpecialty = new EventEmitter<SpecialtyI | null>();
   }
 
   ngOnInit(): void {
@@ -33,8 +33,13 @@ export class SpecialtyFinderComponent implements OnInit {
 
   // Output
   selectSpecialty(item: SpecialtyI) {
-    this.selectedSpecialty = item;
-    this.onSelectSpecialty.emit(this.selectedSpecialty);
+    if (this.selectedSpecialty && this.selectedSpecialty.id === item.id) {
+      this.onSelectSpecialty.emit(null);
+      this.selectedSpecialty = null;
+    } else {
+      this.onSelectSpecialty.emit(item);
+      this.selectedSpecialty = item;
+    }
   }
 
   addSpecialty() {

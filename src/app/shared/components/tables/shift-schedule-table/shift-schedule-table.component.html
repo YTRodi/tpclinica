@@ -3,40 +3,34 @@
   [text]="'Cargando horarios disponibles'"
 ></app-spinner>
 
-<!-- Filtros de especialistas por especialidad (solicitar turno) -->
-<!-- <div>
-  <span *ngIf="this.shifts?.length === 0" class="list-group-item">
-    No hay horarios para la especialidad de
-    {{ this.filterBySpecialtyParams.name }}
-  </span>
-</div> -->
+<div *ngIf="this.shifts?.length === 0">
+  <app-empty-card [text]="'No hay horarios disponibles'"></app-empty-card>
+</div>
 
 <div class="mb-3 animate__animated animate__fadeIn" *ngIf="this.shifts?.length">
-  <!-- Finder -->
-  <div class="input-group mb-3">
-    <input
-      type="text"
-      class="form-control"
-      [(ngModel)]="this.searchString"
-      placeholder="Ingrese el día o el horario a buscar"
-      (keyup)="this.filterByInputValue()"
-    />
-  </div>
+  <div *ngIf="this.copyList" class="overflow-auto" style="height: 200px">
+    <div
+      class="wrapper"
+      *ngFor="let groupByShifts of this.copyList | keyvalue: this.originalOrder"
+    >
+      <div class="group">
+        <div class="date-wrapper text-center my-2">
+          <span>{{ groupByShifts.key }}</span>
+        </div>
 
-  <div *ngIf="this.copyList" class="overflow-auto variantDefaultTableHeight">
-    <div class="list-group">
-      <button
-        *ngFor="let shift of this.copyList"
-        class="list-group-item list-group-item-action"
-        [ngClass]="{ active: this.selectedShift?.id === shift.id }"
-        (click)="this.selectShift(shift)"
-      >
-        <h6 class="my-0">{{ formatShift(shift) }}</h6>
-      </button>
-
-      <span *ngIf="this.copyList?.length === 0" class="list-group-item">
-        No hay horarios disponibles para esta fecha y horario
-      </span>
+        <div class="list-group">
+          <button
+            *ngFor="let shift of groupByShifts.value"
+            class="list-group-item list-group-item-action"
+            [ngClass]="{ active: this.selectedShift?.id === shift.id }"
+            (click)="this.selectShift(shift)"
+          >
+            <h6 class="my-0">
+              {{ this.formatShift(shift) }}
+            </h6>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </div>

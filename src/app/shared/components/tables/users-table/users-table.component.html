@@ -4,11 +4,14 @@
 ></app-spinner>
 
 <!-- Filtros de especialistas por especialidad (solicitar turno) -->
-<div>
-  <span *ngIf="this.userList?.length === 0" class="list-group-item">
-    No hay especialistas para la especialidad de
-    {{ this.filterBySpecialtyParams.name }}
-  </span>
+<div *ngIf="this.userList?.length === 0">
+  <app-empty-card
+    [text]="
+      'No hay especialistas para la especialidad de ' +
+      this.filterBySpecialtyParams.name
+    "
+    [icon]="'USER'"
+  ></app-empty-card>
 </div>
 
 <div

@@ -1,3 +1,4 @@
+import { KeyValue } from '@angular/common';
 import {
   Component,
   EventEmitter,
@@ -7,7 +8,7 @@ import {
   Output,
   SimpleChanges,
 } from '@angular/core';
-import { formatShift } from 'src/app/helpers/shift';
+import { formatShift, groupShiftsByDates } from 'src/app/helpers/shift';
 import { Shift } from 'src/app/interfaces/shift.interface';
 
 @Component({
@@ -22,7 +23,7 @@ export class ShiftScheduleTableComponent implements OnInit, OnChanges {
   @Output() onSelectShift: EventEmitter<Shift | null>;
 
   public searchString: string;
-  public copyList: Shift[] | null = null;
+  public copyList: any[] | null = null;
   public selectedShift: Shift | null = null;
 
   constructor() {
@@ -33,44 +34,21 @@ export class ShiftScheduleTableComponent implements OnInit, OnChanges {
   ngOnInit(): void {}
 
   ngOnChanges(changes: SimpleChanges): void {
-    this.copyList = changes.shifts.currentValue;
-  }
-
-  filterByInputValue() {
-    this.copyList = this.shifts;
-
-    if (this.copyList) {
-      // const filteredList = this.copyList.filter(
-      //   (user: Patient | Specialist | Admin) => {
-      //     return (
-      //       user.firstName
-      //         .toLowerCase()
-      //         .includes(this.searchString.toLowerCase()) ||
-      //       user.lastName
-      //         .toLowerCase()
-      //         .includes(this.searchString.toLowerCase()) ||
-      //       user.email.toLowerCase().includes(this.searchString.toLowerCase())
-      //     );
-      //   }
-      // );
-      // this.copyList = filteredList;
+    if (changes.shifts.currentValue) {
+      this.copyList = groupShiftsByDates(changes.shifts.currentValue);
     }
   }
+
+  originalOrder = (a: KeyValue<any, any>, b: KeyValue<any, any>): any => {
+    return 0;
+  };
 
   async selectShift(selectedShift: Shift) {
     this.selectedShift = selectedShift;
     this.onSelectShift.emit(this.selectedShift);
-
-    // if (this.selectedShift && this.selectedShift.id === selectedShift.id) {
-    //   this.onSelectShift.emit(null);
-    //   this.selectedShift = null;
-    // } else {
-    //   this.selectedShift = selectedShift;
-    //   this.onSelectShift.emit(this.selectedShift);
-    // }
   }
 
-  formatShift(shift: Shift): string {
+  formatShift(shift: Shift | any): string {
     return formatShift(shift);
   }
 }
