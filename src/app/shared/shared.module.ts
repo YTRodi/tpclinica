@@ -1,12 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import {
-  RecaptchaModule,
-  RecaptchaFormsModule,
-  RECAPTCHA_SETTINGS,
-  RecaptchaSettings,
-} from 'ng-recaptcha';
+import { RecaptchaModule, RecaptchaFormsModule } from 'ng-recaptcha';
 
 // Components
 import { SpinnerComponent } from './components/spinner/spinner.component';
@@ -68,13 +63,6 @@ import { EmptyCardComponent } from './components/cards/empty-card/empty-card.com
     // Cards
     EmptyCardComponent,
   ],
-  providers: [
-    {
-      provide: RECAPTCHA_SETTINGS,
-      useValue: {
-        siteKey: '6LeKtL0bAAAAADm-MRgnVAN-Q761n8uP7_TmVVEe',
-      } as RecaptchaSettings,
-    },
-  ],
+  providers: [],
 })
 export class SharedModule {}

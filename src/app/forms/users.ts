@@ -41,70 +41,37 @@ export const getPatientForm = () => {
 
 export const getSpecialistForm = () => {
   return new FormBuilder().group({
-    firstName: new FormControl('pepito', [
+    firstName: new FormControl(null, [
       Validators.required,
       Validators.minLength(2),
     ]),
-    lastName: new FormControl('allala', [
+    lastName: new FormControl(null, [
       Validators.required,
       Validators.minLength(2),
     ]),
-    age: new FormControl(12, [
+    age: new FormControl(null, [
       Validators.required,
       Validators.min(1),
       Validators.max(99),
     ]),
-    dni: new FormControl(12345678, [
+    dni: new FormControl(null, [
       Validators.required,
       Validators.min(11111111),
       Validators.max(99999999),
     ]),
-    email: new FormControl('pepito@gmail.com', [
-      Validators.required,
-      Validators.email,
-    ]),
-    password: new FormControl('123456', [
+    email: new FormControl(null, [Validators.required, Validators.email]),
+    password: new FormControl(null, [
       Validators.required,
       Validators.minLength(6),
       Validators.maxLength(20),
     ]),
-    photo: new FormControl('fotis', [Validators.required]),
+    photo: new FormControl(null, [Validators.required]),
     specialties: new FormArray(
       [new FormControl('', [Validators.required])],
       [Validators.required]
     ),
     recaptcha: new FormControl(null, [Validators.required]),
   });
-
-  // return new FormBuilder().group({
-  //   firstName: new FormControl(null, [
-  //     Validators.required,
-  //     Validators.minLength(2),
-  //   ]),
-  //   lastName: new FormControl(null, [
-  //     Validators.required,
-  //     Validators.minLength(2),
-  //   ]),
-  //   age: new FormControl(null, [
-  //     Validators.required,
-  //     Validators.min(1),
-  //     Validators.max(99),
-  //   ]),
-  //   dni: new FormControl(null, [
-  //     Validators.required,
-  //     Validators.min(11111111),
-  //     Validators.max(99999999),
-  //   ]),
-  //   email: new FormControl(null, [Validators.required, Validators.email]),
-  //   password: new FormControl(null, [
-  //     Validators.required,
-  //     Validators.minLength(6),
-  //     Validators.maxLength(20),
-  //   ]),
-  //   photo: new FormControl(null, [Validators.required]),
-  //   specialties: new FormBuilder().array([null], [Validators.required]),
-  //   recaptcha: new FormControl(null, [Validators.required]),
-  // });
 };
 
 export const getAdminForm = () => {
