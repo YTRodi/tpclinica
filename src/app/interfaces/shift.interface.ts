@@ -7,4 +7,8 @@ export interface Shift {
   status: string;
   specialist?: Specialist;
   patient?: Patient;
+
+  cancelReason?: string;
+  rejectReason?: string;
+  commentCompleted?: string;
 }

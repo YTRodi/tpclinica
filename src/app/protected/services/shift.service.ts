@@ -111,7 +111,7 @@ export class ShiftService {
 
   public updateShiftData(shift: Shift) {
     this.itemDoc = this.afs.doc(`shifts/${shift.id}`);
-    this.itemDoc.update(shift);
+    return this.itemDoc.update(shift);
   }
 
   public async autoUpdateShifts() {

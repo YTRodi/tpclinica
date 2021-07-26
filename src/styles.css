@@ -51,7 +51,11 @@
   height: 300px;
 }
 
+.shiftTableHeight {
+  height: 375px;
+}
+
 /* shift schedule table, specialty finder */
 .variantDefaultTableHeight {
-  height: 180px;
+  height: 230px;
 }

@@ -31,7 +31,7 @@ export class NavbarComponent implements OnInit {
 
   public navAdmin: NavI[] = [
     { to: '/admin/users', routeName: 'Usuarios' },
-    // { to: '/admin/users', routeName: 'Turnos' },
+    { to: '/admin/shifts', routeName: 'Turnos' },
     { to: '/request-shift', routeName: 'Solicitar turno' },
     { to: '/my-profile', routeName: 'Mi Perfil' },
   ];

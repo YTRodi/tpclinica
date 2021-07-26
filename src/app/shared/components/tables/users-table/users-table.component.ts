@@ -10,7 +10,10 @@ import {
 import { UserService } from 'src/app/auth/services/user.service';
 import { Specialist, Patient, Admin } from 'src/app/interfaces/entities';
 import { Roles } from 'src/app/constants/roles';
-import { confirmNotification } from 'src/app/helpers/notifications';
+import {
+  confirmNotification,
+  successNotification,
+} from 'src/app/helpers/notifications';
 import { AuthService } from 'src/app/auth/services/auth.service';
 
 @Component({
@@ -141,18 +144,20 @@ export class UsersTableComponent implements OnInit, OnChanges {
         text: !user.active
           ? `Habilitar cuenta al especialista ${user.firstName} ${user.lastName}`
           : `Deshabilitar cuenta al especialista ${user.firstName} ${user.lastName}`,
-        confirmParams: {
-          title: !user.active
-            ? 'Cuenta habilitada con éxito'
-            : 'Cuenta deshabilitada con éxito',
-        },
       });
 
-      if (confirm)
+      if (confirm) {
         this.userService.updateData({
           ...user,
           active: !user.active,
         });
+
+        successNotification({
+          title: !user.active
+            ? 'Cuenta habilitada con éxito'
+            : 'Cuenta deshabilitada con éxito',
+        });
+      }
     }
   }
 
@@ -166,9 +171,13 @@ export class UsersTableComponent implements OnInit, OnChanges {
 
     const confirm = await confirmNotification({
       text: `Eliminar ${userRole} con email ${user.email}`,
-      confirmParams: { title: 'Usuario eliminado con éxito' },
     });
-    if (confirm) this.userService.deleteUser(user.uid);
+
+    if (confirm) {
+      await this.userService.deleteUser(user.uid);
+
+      successNotification({ title: 'Usuario eliminado con éxito' });
+    }
   }
 
   async onFindUserBySpecialty(specialty: { id: string; name: string }) {

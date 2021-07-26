@@ -1,16 +1,10 @@
 import Swal from 'sweetalert2';
 
-interface ConfirmProps {
-  title?: string;
-  text?: string;
-}
-
 interface Props {
   title?: string;
   text?: string;
   confirmMessage?: string;
   callback?: Function;
-  confirmParams?: ConfirmProps;
 }
 
 export const successNotification = ({ title, text }: Props) => {
@@ -30,8 +24,7 @@ export const errorNotification = ({ title = 'Oops...', text }: Props) => {
 export const confirmNotification = async ({
   title = '¿Estás seguro?',
   text,
-  confirmMessage = 'Confirmar',
-  confirmParams,
+  confirmMessage: confirmButtonText = 'Confirmar',
 }: Props): Promise<any> => {
   let confirmed = false;
 
@@ -41,17 +34,14 @@ export const confirmNotification = async ({
       title,
       text,
       showCancelButton: true,
+      confirmButtonColor: '#4785FF',
       cancelButtonColor: '#DC3545',
-      confirmButtonText: confirmMessage,
+      confirmButtonText: confirmButtonText,
+      cancelButtonText: 'Cancelar',
     });
 
     if (result.isConfirmed) {
       confirmed = true;
-      Swal.fire({
-        icon: 'success',
-        title: confirmParams?.title,
-        text: confirmParams?.text,
-      });
     }
 
     return confirmed;

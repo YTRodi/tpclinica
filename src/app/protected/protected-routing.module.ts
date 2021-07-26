@@ -9,6 +9,7 @@ import { MyProfileComponent } from './pages/my-profile/my-profile.component';
 
 // Admin
 import { UsersComponent } from './pages/admin/users/users.component';
+import { ShiftsComponent } from './pages/admin/shifts/shifts.component';
 
 const routes: Routes = [
   {
@@ -20,7 +21,10 @@ const routes: Routes = [
       { path: 'my-profile', component: MyProfileComponent },
       {
         path: 'admin',
-        children: [{ path: 'users', component: UsersComponent }],
+        children: [
+          { path: 'users', component: UsersComponent },
+          { path: 'shifts', component: ShiftsComponent },
+        ],
       },
     ],
   },

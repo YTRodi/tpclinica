@@ -14,6 +14,7 @@ import { AdminFormComponent } from './components/admin-form/admin-form.component
 // Tables
 import { UsersTableComponent } from './components/tables/users-table/users-table.component';
 import { ShiftScheduleTableComponent } from './components/tables/shift-schedule-table/shift-schedule-table.component';
+import { ShiftsTableComponent } from './components/tables/shifts-table/shifts-table.component';
 
 // Autocomplete
 import { AutocompleteLibModule } from 'angular-ng-autocomplete';
@@ -40,6 +41,7 @@ import { EmptyCardComponent } from './components/cards/empty-card/empty-card.com
     SpecialtyFinderComponent,
     ShiftScheduleTableComponent,
     EmptyCardComponent,
+    ShiftsTableComponent,
   ],
   imports: [
     CommonModule,
@@ -58,6 +60,7 @@ import { EmptyCardComponent } from './components/cards/empty-card/empty-card.com
     // Tables
     UsersTableComponent,
     ShiftScheduleTableComponent,
+    ShiftsTableComponent,
     // Finders
     SpecialtyFinderComponent,
     // Cards

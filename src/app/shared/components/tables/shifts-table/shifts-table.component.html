@@ -1,0 +1,232 @@
+<app-spinner
+  [isLoading]="!this.shiftList"
+  [text]="'Cargando lista de turnos'"
+></app-spinner>
+
+<!-- Filtros de especialistas por especialidad (solicitar turno) -->
+<!-- <div *ngIf="this.shiftList?.length === 0">
+  <app-empty-card
+    [text]="
+      'No hay turnos para esta especialidad o especialista. ' +
+      this.filterBySpecialtyParams.name
+    "
+    [icon]="'USER'"
+  ></app-empty-card>
+</div> -->
+
+<div
+  class="mb-3 animate__animated animate__fadeIn"
+  *ngIf="this.shiftList?.length"
+>
+  <!-- Count list -->
+  <h4 class="d-flex justify-content-between align-items-center mb-3">
+    <!-- *ngIf="this.showCountList" -->
+    <span class="text-primary">Lista de {{ this.title }}</span>
+    <span class="badge bg-primary rounded-pill">
+      {{ this.shiftList?.length }}
+    </span>
+  </h4>
+
+  <div *ngIf="this.shiftList" class="overflow-auto shiftTableHeight">
+    <ul class="list-group">
+      <li
+        class="
+          list-group-item list-group-item-action
+          d-flex
+          justify-content-between
+          align-items-center
+        "
+        style="cursor: pointer"
+        *ngFor="let shift of this.shiftList"
+        (click)="this.selectShift(shift)"
+      >
+        <div
+          class="d-flex flex-column justify-content-start align-items-start"
+          style="flex: 1"
+          *ngIf="this.showShiftDetail"
+        >
+          <h6 class="my-0">Especialidad: {{ shift.specialty }}</h6>
+          <h6 class="my-0">Fecha: {{ this.formatShift(shift) }}</h6>
+          <h6 class="my-0">Estado: {{ this.formatStatus(shift.status) }}</h6>
+        </div>
+
+        <!-- Specialist -->
+        <div
+          class="d-flex justify-content-start align-items-center"
+          style="flex: 1"
+          *ngIf="this.showSpecialist"
+        >
+          <img
+            class="me-3 rounded-circle"
+            [src]="shift.specialist?.photo"
+            alt="User image"
+            width="55"
+            height="55"
+          />
+
+          <div>
+            <small class="text-muted">Especialista</small>
+            <h6 class="my-0">
+              {{ shift.specialist?.firstName }}
+              {{ shift.specialist?.lastName }}
+            </h6>
+            <h6 class="my-0">{{ shift.specialist?.email }}</h6>
+          </div>
+        </div>
+
+        <!-- Patient -->
+        <div
+          class="d-flex justify-content-start align-items-center"
+          style="flex: 1"
+          *ngIf="this.showPatient && shift.patient"
+        >
+          <img
+            class="me-3 rounded-circle"
+            [src]="shift.patient?.photo"
+            alt="User image"
+            width="55"
+            height="55"
+          />
+
+          <div>
+            <small class="text-muted">Paciente</small>
+            <h6 class="my-0">
+              {{ shift.patient?.firstName }} {{ shift.patient?.lastName }}
+            </h6>
+            <h6 class="my-0">{{ shift.patient?.email }}</h6>
+          </div>
+        </div>
+
+        <div
+          class="d-flex justify-content-start align-items-center"
+          style="flex: 1"
+          *ngIf="this.showPatient && !shift.patient"
+        >
+          <h6 class="my-0">No hay paciente</h6>
+        </div>
+
+        <!-- Buttons -->
+        <div>
+          <!-- ACEPTAR TURNO (solo especialista) -->
+          <button
+            class="btn btn-outline-primary me-3"
+            *ngIf="getAcceptShiftCondition(shift)"
+            (click)="onAcceptShift(shift)"
+          >
+            <i class="far fa-thumbs-up"></i>
+          </button>
+
+          <!-- RECHAZAR TURNO (SOLO ESPECIALISTA) -->
+          <button
+            class="btn btn-outline-secondary me-3"
+            *ngIf="getRejectShiftCondition(shift)"
+            (click)="this.selectShift(shift) && (this.isRejectShift = true)"
+            data-bs-toggle="modal"
+            data-bs-target="#commentModal"
+          >
+            <i class="far fa-thumbs-down"></i>
+          </button>
+
+          <!-- CANCELAR TURNO (todos los roles) -->
+          <button
+            class="btn btn-outline-danger me-3"
+            *ngIf="getCancelShiftCondition(shift)"
+            (click)="this.selectShift(shift) && (this.isCancelShift = true)"
+            data-bs-toggle="modal"
+            data-bs-target="#commentModal"
+          >
+            <!-- (click)="onCancelShift(shift)" -->
+            <i class="far fa-window-close"></i>
+          </button>
+
+          <!-- FINALIZAR TURNO (SOLO ESPECIALISTA) -->
+          <button
+            class="btn btn-outline-success"
+            *ngIf="this.getCompletedShiftCondition(shift)"
+            (click)="this.selectShift(shift) && (this.isCompletedShift = true)"
+            data-bs-toggle="modal"
+            data-bs-target="#commentModal"
+          >
+            <i class="far fa-check-square"></i>
+          </button>
+
+          <!-- VER RESEÑA (ADENTRO DEL MODAL...) -->
+        </div>
+      </li>
+
+      <app-empty-card
+        *ngIf="this.shiftList.length === 0"
+        [text]="'No hay turnos'"
+      >
+      </app-empty-card>
+    </ul>
+  </div>
+</div>
+
+<!-- Cancelled modal -->
+<div class="modal fade" id="commentModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{
+            this.isCompletedShift
+              ? "Diagnóstico del paciente"
+              : "Detalles del turno"
+          }}
+        </h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <div class="modal-body">
+        <form
+          [formGroup]="this.commentShiftForm"
+          (ngSubmit)="this.onCancelShift()"
+        >
+          <div>
+            <label for="txtareaCancel" class="form-label">
+              {{
+                this.isCompletedShift
+                  ? "Reseña de la consulta"
+                  : this.isCancelShift
+                  ? "¿Por qué quiere cancelar el turno?"
+                  : this.isRejectShift && "¿Por qué quiere rechazar el turno?"
+              }}
+            </label>
+
+            <textarea
+              class="form-control"
+              placeholder="Deje un comentario aquí"
+              style="height: 100px"
+              id="txtareaCancel"
+              style="resize: none"
+              formControlName="comment"
+            ></textarea>
+          </div>
+
+          <div class="form-text text-danger">
+            {{ this.getErrorMessage("comment") }}
+          </div>
+        </form>
+      </div>
+
+      <div class="modal-footer">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          (click)="
+            this.isCancelShift ? this.onCancelShift() : this.onRejectShift()
+          "
+          data-bs-dismiss="modal"
+          [disabled]="this.commentShiftForm.invalid"
+        >
+          Enviar comentario
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

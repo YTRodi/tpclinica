@@ -1,5 +1,6 @@
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import { ShiftStatus } from '../constants/shifts';
 import { Shift } from '../interfaces/shift.interface';
 
 export const parsedSelectedDatesInForm = (
@@ -32,4 +33,29 @@ export const groupShiftsByDates = (items: Shift[]) => {
 
     return acc;
   }, {});
+};
+
+export const formatShiftStatus = (shiftStatus: string): string => {
+  switch (shiftStatus) {
+    case ShiftStatus.AVAILABLE:
+      return 'disponible';
+
+    case ShiftStatus.PENDING:
+      return 'pendiente';
+
+    case ShiftStatus.ACCEPTED:
+      return 'aceptado';
+
+    case ShiftStatus.CANCELLED:
+      return 'cancelado';
+
+    case ShiftStatus.COMPLETED:
+      return 'completado';
+
+    case ShiftStatus.REJECTED:
+      return 'rechazado';
+
+    default:
+      return '';
+  }
 };
