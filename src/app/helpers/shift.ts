@@ -55,6 +55,9 @@ export const formatShiftStatus = (shiftStatus: string): string => {
     case ShiftStatus.REJECTED:
       return 'rechazado';
 
+    case ShiftStatus.UNAVAILABLE:
+      return 'pasado';
+
     default:
       return '';
   }

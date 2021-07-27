@@ -7,12 +7,13 @@ import {
 } from '@angular/forms';
 import { ShiftStatus } from 'src/app/constants/shifts';
 import {
-  confirmNotification,
+  errorNotification,
   successNotification,
 } from 'src/app/helpers/notifications';
 import { formatConfirmShift, formatShiftStatus } from 'src/app/helpers/shift';
-import { Patient, Specialist, Admin } from 'src/app/interfaces/entities';
+import { ClinicHistory } from 'src/app/interfaces/clinicHistory.interface';
 import { Shift } from 'src/app/interfaces/shift.interface';
+import { ClinicHistoryService } from 'src/app/protected/services/clinic-history.service';
 import { ShiftService } from 'src/app/protected/services/shift.service';
 
 const isValidAdminAndSpecialistShiftStatus = (shift: Shift) =>
@@ -23,10 +24,88 @@ const isValidAdminAndSpecialistShiftStatus = (shift: Shift) =>
 
 const getCommentShiftForm = () => {
   return new FormBuilder().group({
-    comment: new FormControl('', [
+    comment: new FormControl(null, [
       Validators.required,
       Validators.minLength(6),
     ]),
+  });
+};
+
+const getCompletedShiftForm = () => {
+  // return new FormBuilder().group({
+  //   comment: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.minLength(6),
+  //   ]),
+  //   diagnosis: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.minLength(6),
+  //   ]),
+  //   height: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.min(30),
+  //     Validators.max(210),
+  //   ]),
+  //   weight: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.min(20),
+  //     Validators.max(180),
+  //   ]),
+  //   temperature: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.min(36),
+  //     Validators.max(42),
+  //   ]),
+  //   pressureSystolic: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.min(120),
+  //     Validators.max(129),
+  //   ]),
+  //   pressureDiastolic: new FormControl(null, [
+  //     Validators.required,
+  //     Validators.min(80),
+  //     Validators.max(84),
+  //   ]),
+
+  //   //TODO, datos dinámicos: edad y IMC?
+  // });
+
+  return new FormBuilder().group({
+    comment: new FormControl('comentario largo', [
+      Validators.required,
+      Validators.minLength(6),
+    ]),
+    diagnosis: new FormControl('comentario largo', [
+      Validators.required,
+      Validators.minLength(6),
+    ]),
+    height: new FormControl(180, [
+      Validators.required,
+      Validators.min(30),
+      Validators.max(210),
+    ]),
+    weight: new FormControl(90, [
+      Validators.required,
+      Validators.min(20),
+      Validators.max(180),
+    ]),
+    temperature: new FormControl(36, [
+      Validators.required,
+      Validators.min(36),
+      Validators.max(42),
+    ]),
+    pressureSystolic: new FormControl(120, [
+      Validators.required,
+      Validators.min(120),
+      Validators.max(129),
+    ]),
+    pressureDiastolic: new FormControl(80, [
+      Validators.required,
+      Validators.min(80),
+      Validators.max(84),
+    ]),
+
+    // edad y
   });
 };
 
@@ -57,8 +136,12 @@ export class ShiftsTableComponent implements OnInit {
 
   // Forms
   public commentShiftForm: FormGroup = getCommentShiftForm();
+  public completedShiftForm: FormGroup = getCompletedShiftForm();
 
-  constructor(private shiftService: ShiftService, private fb: FormBuilder) {
+  constructor(
+    private shiftService: ShiftService,
+    private clinicHistoryService: ClinicHistoryService
+  ) {
     this.onSelectShift = new EventEmitter<Shift | null>();
   }
 
@@ -80,25 +163,66 @@ export class ShiftsTableComponent implements OnInit {
   async selectShift(selectedShift: Shift) {
     this.onSelectShift.emit(selectedShift);
     this.selectedShift = selectedShift;
-
-    console.log(`this.selectedShift`, this.selectedShift);
-
-    // if (this.selectedShift && this.selectedShift.id === selectedShift.id) {
-    //   this.onSelectShift.emit(null);
-    //   this.selectedShift = null;
-    // } else {
-    //   this.onSelectShift.emit(selectedShift);
-    //   this.selectedShift = selectedShift;
-    // }
   }
 
-  getErrorMessage(formControlName: string) {
+  getErrorMessageCancelShift(formControlName: string) {
     if (this.commentShiftForm.get(formControlName)?.touched) {
       if (this.commentShiftForm.get(formControlName)?.errors?.required)
         return 'Debes ingresar un valor';
 
-      if (this.commentShiftForm.get(formControlName)?.hasError('minlength')) {
+      if (this.commentShiftForm.get(formControlName)?.hasError('minlength'))
+        return 'El comentario debe contener 6 caracteres como mínimo;';
+    }
+
+    return '';
+  }
+
+  getErrorMessageCompletedShift(formControlName: string) {
+    if (this.completedShiftForm.get(formControlName)?.touched) {
+      if (this.completedShiftForm.get(formControlName)?.errors?.required)
+        return 'Debes ingresar un valor';
+
+      if (
+        (formControlName === 'comment' || formControlName === 'diagnosis') &&
+        this.completedShiftForm.get(formControlName)?.hasError('minlength')
+      ) {
         return 'El comentario debe contener 6 caracteres como mínimo,';
+      }
+
+      // min - max
+      if (formControlName === 'height') {
+        if (this.completedShiftForm.get(formControlName)?.errors?.min)
+          return 'La altura mínima es de 30cm';
+        else if (this.completedShiftForm.get(formControlName)?.errors?.max)
+          return 'La altura máxima es de 210cm';
+      }
+
+      if (formControlName === 'weight') {
+        if (this.completedShiftForm.get(formControlName)?.errors?.min)
+          return 'El peso mínimo es de 20kg';
+        else if (this.completedShiftForm.get(formControlName)?.errors?.max)
+          return 'El peso máximo es de 180kg';
+      }
+
+      if (formControlName === 'temperature') {
+        if (this.completedShiftForm.get(formControlName)?.errors?.min)
+          return 'La temperatura mínima es de 36ºC';
+        else if (this.completedShiftForm.get(formControlName)?.errors?.max)
+          return 'La temperatura máxima es de 42ºC';
+      }
+
+      if (formControlName === 'pressureSystolic') {
+        if (this.completedShiftForm.get(formControlName)?.errors?.min)
+          return 'La presión sistólica mínima es de 120 mmHg';
+        else if (this.completedShiftForm.get(formControlName)?.errors?.max)
+          return 'La presión sistólica máxima es de 129 mmHg';
+      }
+
+      if (formControlName === 'pressureDiastolic') {
+        if (this.completedShiftForm.get(formControlName)?.errors?.min)
+          return 'La presión diastólica mínima es de 80 mmHg';
+        else if (this.completedShiftForm.get(formControlName)?.errors?.max)
+          return 'La presión diastólica máxima es de 84 mmHg';
       }
     }
 
@@ -185,12 +309,85 @@ export class ShiftsTableComponent implements OnInit {
   }
 
   async onCompletedShift() {
-    // TODO: me quedé en la parte de completar un turno
-    /**
-     * Tengo que agregar un campo más al form que sea 'diagnostico', tendré que crear un nuevo form? y hacer un if en el modal, para que muestre otro form?
-     * Tengo que agregar un campo más al form que sea 'diagnostico', tendré que crear un nuevo form? y hacer un if en el modal, para que muestre otro form?
-     * Tengo que agregar un campo más al form que sea 'diagnostico', tendré que crear un nuevo form? y hacer un if en el modal, para que muestre otro form?
-     * Tengo que agregar un campo más al form que sea 'diagnostico', tendré que crear un nuevo form? y hacer un if en el modal, para que muestre otro form?
-     */
+    const {
+      comment,
+      diagnosis,
+      height,
+      weight,
+      temperature,
+      pressureSystolic,
+      pressureDiastolic,
+    } = this.completedShiftForm.getRawValue();
+
+    console.log(`this.selectedShift`, this.selectedShift);
+
+    try {
+      if (this.selectedShift && this.selectedShift.patient) {
+        const completedShift: Shift = {
+          ...this.selectedShift,
+          status: ShiftStatus.COMPLETED,
+          commentCompleted: comment,
+          diagnosis,
+          completedAt: new Date().toString(),
+          patientData: {
+            height,
+            weight,
+            temperature,
+            pressure: {
+              pressureSystolic,
+              pressureDiastolic,
+            },
+          },
+        };
+
+        console.log(`completedShift`, completedShift);
+
+        // await this.shiftService.updateShiftData(completedShift);
+
+        const result =
+          await this.clinicHistoryService.getClinicHistoriesByPatientEmail(
+            this.selectedShift.patient.email
+          );
+
+        result.subscribe(async (data: ClinicHistory[]): Promise<any> => {
+          if (data.length === 0) {
+            const firstClinicHistory: ClinicHistory = {
+              patient: completedShift.patient,
+              shifts: [completedShift],
+            };
+
+            await this.clinicHistoryService.addClinicHistory(
+              firstClinicHistory
+            );
+
+            return successNotification({
+              title: 'Estado del turno',
+              text: 'El turno fue completado y agendado en la historia clínica con éxito!',
+            });
+          }
+
+          // TODO: esto no funcionó, me empieza a crear historias clínicas a lo loco. Debería pasar el subscribe a un promise?
+          // TODO: esto no funcionó, me empieza a crear historias clínicas a lo loco. Debería pasar el subscribe a un promise?
+          // TODO: esto no funcionó, me empieza a crear historias clínicas a lo loco. Debería pasar el subscribe a un promise?
+          // TODO: esto no funcionó, me empieza a crear historias clínicas a lo loco. Debería pasar el subscribe a un promise?
+
+          // const updatedClinicHistory: ClinicHistory = {
+          //   ...data[0],
+          //   shifts: [...data[0].shifts!, completedShift],
+          // };
+
+          // await this.clinicHistoryService.addClinicHistory(
+          //   updatedClinicHistory
+          // );
+
+          // return successNotification({
+          //   title: 'Estado del turno',
+          //   text: 'El turno fue completado y agendado en la historia clínica con éxito!',
+          // });
+        });
+      }
+    } catch (error) {
+      errorNotification({ text: error.message });
+    }
   }
 }

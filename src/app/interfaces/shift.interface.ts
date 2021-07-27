@@ -11,4 +11,15 @@ export interface Shift {
   cancelReason?: string;
   rejectReason?: string;
   commentCompleted?: string;
+  completedAt?: string | Date;
+  diagnosis?: string;
+  patientData?: {
+    height: number;
+    weight: number;
+    temperature: number;
+    pressure: {
+      pressureSystolic: number;
+      pressureDiastolic: number;
+    };
+  };
 }

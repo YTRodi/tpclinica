@@ -145,7 +145,7 @@
             *ngIf="this.getCompletedShiftCondition(shift)"
             (click)="this.selectShift(shift) && (this.isCompletedShift = true)"
             data-bs-toggle="modal"
-            data-bs-target="#commentModal"
+            data-bs-target="#completedModal"
           >
             <i class="far fa-check-square"></i>
           </button>
@@ -168,13 +168,7 @@
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title">
-          {{
-            this.isCompletedShift
-              ? "Diagnóstico del paciente"
-              : "Detalles del turno"
-          }}
-        </h5>
+        <h4 class="modal-title">Detalles del turno</h4>
         <button
           type="button"
           class="btn-close"
@@ -188,15 +182,13 @@
           (ngSubmit)="this.onCancelShift()"
         >
           <div>
-            <label for="txtareaCancel" class="form-label">
+            <h5 for="txtareaCancel" class="form-label">
               {{
-                this.isCompletedShift
-                  ? "Reseña de la consulta"
-                  : this.isCancelShift
+                this.isCancelShift
                   ? "¿Por qué quiere cancelar el turno?"
                   : this.isRejectShift && "¿Por qué quiere rechazar el turno?"
               }}
-            </label>
+            </h5>
 
             <textarea
               class="form-control"
@@ -205,11 +197,12 @@
               id="txtareaCancel"
               style="resize: none"
               formControlName="comment"
+              autocomplete="off"
             ></textarea>
           </div>
 
           <div class="form-text text-danger">
-            {{ this.getErrorMessage("comment") }}
+            {{ this.getErrorMessageCancelShift("comment") }}
           </div>
         </form>
       </div>
@@ -227,6 +220,186 @@
           Enviar comentario
         </button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- Completed modal -->
+<div class="modal fade" id="completedModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title">Detalles del turno</h4>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+
+      <form
+        [formGroup]="this.completedShiftForm"
+        (ngSubmit)="this.onCompletedShift()"
+      >
+        <div class="modal-body">
+          {{ this.completedShiftForm.getRawValue() | json }}
+
+          <div class="mb-3">
+            <h5 for="txtareaComment" class="form-label">
+              Reseña de la consulta
+            </h5>
+
+            <textarea
+              class="form-control"
+              placeholder="Deje un comentario aquí"
+              style="height: 100px"
+              id="txtareaComment"
+              style="resize: none"
+              formControlName="comment"
+              autocomplete="off"
+            ></textarea>
+
+            <div class="form-text text-danger">
+              {{ this.getErrorMessageCompletedShift("comment") }}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <h5 for="txtareaDiagnosis" class="form-label">Diagnóstico</h5>
+
+            <textarea
+              class="form-control"
+              placeholder="Deje un comentario aquí"
+              style="height: 100px"
+              id="txtareaDiagnosis"
+              style="resize: none"
+              formControlName="diagnosis"
+              autocomplete="off"
+            ></textarea>
+
+            <div class="form-text text-danger">
+              {{ this.getErrorMessageCompletedShift("diagnosis") }}
+            </div>
+          </div>
+
+          <!-- user Data -->
+          <h5 class="form-label">Datos del paciente</h5>
+          <div class="mb-3">
+            <div class="row g-3">
+              <div class="col-md-6">
+                <label for="height" class="form-label">Altura</label>
+                <div class="input-group">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="height"
+                    placeholder="Altura del paciente"
+                    formControlName="height"
+                    min="30"
+                    max="210"
+                    autocomplete="off"
+                  />
+                  <span class="input-group-text">cm</span>
+                </div>
+
+                <div class="form-text text-danger">
+                  {{ this.getErrorMessageCompletedShift("height") }}
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="weight" class="form-label">Peso</label>
+                <div class="input-group">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="weight"
+                    placeholder="Peso del paciente"
+                    formControlName="weight"
+                    min="20"
+                    max="180"
+                    autocomplete="off"
+                  />
+                  <span class="input-group-text">kg</span>
+                </div>
+                <div class="form-text text-danger">
+                  {{ this.getErrorMessageCompletedShift("weight") }}
+                </div>
+              </div>
+            </div>
+
+            <div class="row g-3 mt-2">
+              <div class="col-md-6">
+                <label for="temperature" class="form-label">Temperatura</label>
+                <div class="input-group">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="temperature"
+                    placeholder="Temperatura del paciente"
+                    formControlName="temperature"
+                    min="36"
+                    max="42"
+                    autocomplete="off"
+                  />
+                  <span class="input-group-text">ºC</span>
+                </div>
+                <div class="form-text text-danger">
+                  {{ this.getErrorMessageCompletedShift("temperature") }}
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <label for="pressureSystolic" class="form-label">
+                  Presión sanguínea
+                </label>
+                <div class="input-group">
+                  <input
+                    type="number"
+                    class="form-control"
+                    id="pressureSystolic"
+                    placeholder="Sistólica"
+                    formControlName="pressureSystolic"
+                    min="120"
+                    max="129"
+                    autocomplete="off"
+                  />
+                  <span class="input-group-text">/</span>
+                  <input
+                    type="number"
+                    class="form-control"
+                    placeholder="Diastólica"
+                    formControlName="pressureDiastolic"
+                    min="80"
+                    max="84"
+                    autocomplete="off"
+                  />
+                </div>
+
+                <div class="form-text text-danger">
+                  {{ this.getErrorMessageCompletedShift("pressureSystolic") }}
+                </div>
+
+                <div class="form-text text-danger">
+                  {{ this.getErrorMessageCompletedShift("pressureDiastolic") }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            data-bs-dismiss="modal"
+            (click)="this.onCompletedShift()"
+            [disabled]="this.completedShiftForm.invalid"
+          >
+            Completar consulta
+          </button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
