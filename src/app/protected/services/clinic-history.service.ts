@@ -5,7 +5,7 @@ import {
   AngularFirestore,
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { first, map, tap } from 'rxjs/operators';
 import { ClinicHistory } from 'src/app/interfaces/clinicHistory.interface';
 
 @Injectable({
@@ -13,7 +13,7 @@ import { ClinicHistory } from 'src/app/interfaces/clinicHistory.interface';
 })
 export class ClinicHistoryService {
   public clinicHistoryCollection: AngularFirestoreCollection<any>;
-  private nameCollectionDB = 'clinicHistory';
+  private nameCollectionDB = 'clinicHistories';
   public itemDoc: AngularFirestoreDocument<any> | null = null;
 
   constructor(private afs: AngularFirestore) {
@@ -36,10 +36,6 @@ export class ClinicHistoryService {
       );
   }
 
-  // public async getClinicHistoriesByPatientEmail(
-  //   patientEmail: string
-  // ): Promise<Observable<ClinicHistory[]>> {
-
   public async getClinicHistoriesByPatientEmail(patientEmail: string) {
     return this.afs
       .collection(this.nameCollectionDB, (ref) =>
@@ -60,5 +56,10 @@ export class ClinicHistoryService {
 
   public addClinicHistory(clinicHistory: ClinicHistory) {
     return this.clinicHistoryCollection.add(clinicHistory);
+  }
+
+  public updateClinicHistorytData(clinicHistory: ClinicHistory) {
+    this.itemDoc = this.afs.doc(`clinicHistories/${clinicHistory.id}`);
+    return this.itemDoc.update(clinicHistory);
   }
 }

@@ -308,7 +308,7 @@ export class ShiftsTableComponent implements OnInit {
     });
   }
 
-  async onCompletedShift() {
+  async onCompletedShift(): Promise<any> {
     const {
       comment,
       diagnosis,
@@ -318,8 +318,6 @@ export class ShiftsTableComponent implements OnInit {
       pressureSystolic,
       pressureDiastolic,
     } = this.completedShiftForm.getRawValue();
-
-    console.log(`this.selectedShift`, this.selectedShift);
 
     try {
       if (this.selectedShift && this.selectedShift.patient) {
@@ -340,51 +338,49 @@ export class ShiftsTableComponent implements OnInit {
           },
         };
 
-        console.log(`completedShift`, completedShift);
+        await this.shiftService.updateShiftData(completedShift);
 
-        // await this.shiftService.updateShiftData(completedShift);
-
-        const result =
+        const clinicHistoryByPatientEmail =
           await this.clinicHistoryService.getClinicHistoriesByPatientEmail(
             this.selectedShift.patient.email
           );
 
-        result.subscribe(async (data: ClinicHistory[]): Promise<any> => {
-          if (data.length === 0) {
-            const firstClinicHistory: ClinicHistory = {
-              patient: completedShift.patient,
-              shifts: [completedShift],
+        const newSubscription = clinicHistoryByPatientEmail.subscribe(
+          (data: ClinicHistory[]) => {
+            if (data.length === 0) {
+              const firstClinicHistory: ClinicHistory = {
+                patient: completedShift.patient,
+                shifts: [completedShift],
+              };
+
+              // No uso await, por qué sino me genera un bucle infinito.
+              this.clinicHistoryService.addClinicHistory(firstClinicHistory);
+
+              successNotification({
+                title: 'Estado del turno',
+                text: 'El turno fue completado y agendado en la historia clínica con éxito!',
+              });
+
+              return newSubscription.unsubscribe();
+            }
+
+            const updatedClinicHistory: ClinicHistory = {
+              ...data[0],
+              shifts: [...data[0].shifts!, completedShift],
             };
 
-            await this.clinicHistoryService.addClinicHistory(
-              firstClinicHistory
-            );
+            this.clinicHistoryService
+              .updateClinicHistorytData(updatedClinicHistory)
+              .then(() => {
+                successNotification({
+                  title: 'Estado del turno',
+                  text: 'El turno fue completado y agendado en la historia clínica con éxito!',
+                });
+              });
 
-            return successNotification({
-              title: 'Estado del turno',
-              text: 'El turno fue completado y agendado en la historia clínica con éxito!',
-            });
+            return newSubscription.unsubscribe();
           }
-
-          // TODO: esto no funcionó, me empieza a crear historias clínicas a lo loco. Debería pasar el subscribe a un promise?
-          // TODO: esto no funcionó, me empieza a crear historias clínicas a lo loco. Debería pasar el subscribe a un promise?
-          // TODO: esto no funcionó, me empieza a crear historias clínicas a lo loco. Debería pasar el subscribe a un promise?
-          // TODO: esto no funcionó, me empieza a crear historias clínicas a lo loco. Debería pasar el subscribe a un promise?
-
-          // const updatedClinicHistory: ClinicHistory = {
-          //   ...data[0],
-          //   shifts: [...data[0].shifts!, completedShift],
-          // };
-
-          // await this.clinicHistoryService.addClinicHistory(
-          //   updatedClinicHistory
-          // );
-
-          // return successNotification({
-          //   title: 'Estado del turno',
-          //   text: 'El turno fue completado y agendado en la historia clínica con éxito!',
-          // });
-        });
+        );
       }
     } catch (error) {
       errorNotification({ text: error.message });
