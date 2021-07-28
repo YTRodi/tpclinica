@@ -263,6 +263,9 @@ export class ShiftsTableComponent implements OnInit {
     // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
     // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
     // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
+    // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
+    // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
+    // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
     return !this.isSpecialist && shift.status === ShiftStatus.ACCEPTED;
   }
 
@@ -387,3 +390,9 @@ export class ShiftsTableComponent implements OnInit {
     }
   }
 }
+
+/**
+ * TODO:
+ * 1) Hacer que filtre los shifts por specialty o specialist o los dos juntos. (Si ninguno está seleccionado, mostrar todos los existentes)
+ * 2) Agregar los datos dinámicos que me pide en el sprint 3
+ */
