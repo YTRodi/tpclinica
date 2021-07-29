@@ -14,11 +14,10 @@
       <div class="rounded-3">
         <h2>Especialista</h2>
 
-        <!-- *ngIf="this.selectedSpecialty" -->
-        <!-- (onSelectUser)="this.setSelectedSpecialist($event)" -->
-        <!-- [filterBySpecialtyParams]="this.selectedSpecialty" -->
         <app-users-table
           [filter]="'SPECIALIST'"
+          (onSelectUser)="this.setSelectedSpecialist($event)"
+          [filterBySpecialtyParams]="this.selectedSpecialty"
           [eneabledFinder]="true"
           [showInputFinder]="true"
           [showCountList]="false"
@@ -27,24 +26,28 @@
           [showRole]="true"
           [showStatusAccount]="false"
         ></app-users-table>
-
-        <!-- <div *ngIf="!this.selectedSpecialty">
-          Seleccione una especialidad para ver los especialistas disponibles...
-        </div> -->
       </div>
     </div>
   </div>
 
-  <!-- <pre>
-    especialidad: {{ this.selectedSpecialty | json }}
-  </pre> -->
-
   <div class="row">
     <div class="col">
-      <app-shifts-table
-        [showPatient]="true"
-        [isAdmin]="true"
-      ></app-shifts-table>
+      <div class="rounded-3">
+        <h2>Turnos</h2>
+
+        <app-shifts-table
+          [showPatient]="true"
+          [showSpecialist]="true"
+          [isAdmin]="true"
+          (onSelectShift)="this.setSelectedShift($event)"
+          [filterBySpecialtyParams]="this.selectedSpecialty"
+          [filterByUserParams]="this.selectedSpecialist"
+          [bothFilters]="{
+            specialty: this.selectedSpecialty,
+            user: this.selectedSpecialist
+          }"
+        ></app-shifts-table>
+      </div>
     </div>
   </div>
 </div>

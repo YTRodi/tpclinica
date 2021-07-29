@@ -7,6 +7,7 @@ import {
 import { addDays, getDay, isPast, set } from 'date-fns';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { Specialty } from 'src/app/auth/interfaces/specialty';
 import { ShiftStatus } from 'src/app/constants/shifts';
 import { parsedSelectedDatesInForm } from 'src/app/helpers/shift';
 import { Shift } from 'src/app/interfaces/shift.interface';
@@ -39,10 +40,46 @@ export class ShiftService {
       );
   }
 
-  public async getShiftsByEmail(email: string) {
+  public async getShiftsBySpecialistEmail(email: string) {
     return this.afs
       .collection(this.nameCollectionDB, (ref) =>
         ref.where('specialist.email', '==', email)
+      )
+      .snapshotChanges()
+      .pipe(
+        map((actions: any) =>
+          actions.map((a: any) => {
+            const data = a.payload.doc.data() as object;
+            const id = a.payload.doc.id;
+
+            return { id, ...data };
+          })
+        )
+      );
+  }
+
+  public async getShiftsByPatientEmail(email: string) {
+    return this.afs
+      .collection(this.nameCollectionDB, (ref) =>
+        ref.where('patient.email', '==', email)
+      )
+      .snapshotChanges()
+      .pipe(
+        map((actions: any) =>
+          actions.map((a: any) => {
+            const data = a.payload.doc.data() as object;
+            const id = a.payload.doc.id;
+
+            return { id, ...data };
+          })
+        )
+      );
+  }
+
+  public async getShiftsBySpecialty(specialty: Specialty) {
+    return this.afs
+      .collection(this.nameCollectionDB, (ref) =>
+        ref.where('specialty', '==', specialty.name)
       )
       .snapshotChanges()
       .pipe(

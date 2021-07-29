@@ -10,7 +10,7 @@ import { finalize, first, map, tap } from 'rxjs/operators';
 import { FolderImages } from 'src/app/constants/images';
 import { Roles } from 'src/app/constants/roles';
 import { Patient, Specialist, Admin } from 'src/app/interfaces/entities';
-import { FileI } from '../interfaces/fileI';
+import { File } from '../interfaces/fileI';
 import { v4 } from 'uuid';
 
 @Injectable({
@@ -108,7 +108,7 @@ export class UserService {
   public preAddAndUploadImage(
     user: Patient | Specialist | Admin,
     folder: FolderImages,
-    images: FileI[]
+    images: File[]
   ): void {
     this.uploadImage(user, folder, images);
   }
@@ -145,7 +145,7 @@ export class UserService {
   private async uploadImage(
     user: Patient | Specialist | Admin,
     folder: FolderImages,
-    images: FileI[]
+    images: File[]
   ) {
     if (images.length === 2) {
       let flag = 0;

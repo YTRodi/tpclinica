@@ -1,10 +1,20 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import {
   FormBuilder,
   FormControl,
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Specialty } from 'src/app/auth/interfaces/specialty';
+import { Roles } from 'src/app/constants/roles';
 import { ShiftStatus } from 'src/app/constants/shifts';
 import {
   errorNotification,
@@ -12,6 +22,7 @@ import {
 } from 'src/app/helpers/notifications';
 import { formatConfirmShift, formatShiftStatus } from 'src/app/helpers/shift';
 import { ClinicHistory } from 'src/app/interfaces/clinicHistory.interface';
+import { Admin, Patient, Specialist } from 'src/app/interfaces/entities';
 import { Shift } from 'src/app/interfaces/shift.interface';
 import { ClinicHistoryService } from 'src/app/protected/services/clinic-history.service';
 import { ShiftService } from 'src/app/protected/services/shift.service';
@@ -109,15 +120,38 @@ const getCompletedShiftForm = () => {
   });
 };
 
+enum ShiftFilterBy {
+  DEFAULT = 'DEFAULT',
+  SPECIALTY = 'SPECIALTY',
+  USER = 'USER',
+  BOTH_FILTERS = 'BOTH_FILTERS',
+}
+
+interface Props {
+  type?: ShiftFilterBy | null;
+  specialtyPayload?: Specialty | null;
+  userPayload?: Patient | Specialist | Admin | null;
+  bothPayload?: {
+    specialty: Specialty | null;
+    user: Patient | Specialist | Admin | null;
+  } | null;
+}
+
 @Component({
   selector: 'app-shifts-table',
   templateUrl: './shifts-table.component.html',
   styleUrls: ['./shifts-table.component.css'],
 })
-export class ShiftsTableComponent implements OnInit {
-  @Output() onSelectShift: EventEmitter<Shift | null>;
+export class ShiftsTableComponent implements OnInit, OnChanges {
+  @Input() bothFilters: {
+    specialty: Specialty | null;
+    user: Patient | Specialist | Admin | null;
+  } | null = null;
+  @Input() filterBySpecialtyParams: Specialty | null = null;
+  @Input() filterByUserParams: Patient | Specialist | Admin | null = null;
 
   // Filter buttons
+  @Input() showCountList: boolean = false;
   @Input() isAdmin: boolean = false;
   @Input() isSpecialist: boolean = false;
   @Input() isPatient: boolean = false;
@@ -127,7 +161,9 @@ export class ShiftsTableComponent implements OnInit {
   @Input() showSpecialist: boolean = false;
 
   @Input() title: string = 'turnos';
-  public shiftList: Array<Shift> | null = null;
+  @Output() onSelectShift: EventEmitter<Shift | null>;
+
+  public shifts: Shift[] | null = null;
   public selectedShift: Shift | null = null;
 
   public isCancelShift: boolean = false;
@@ -145,19 +181,151 @@ export class ShiftsTableComponent implements OnInit {
     this.onSelectShift = new EventEmitter<Shift | null>();
   }
 
-  ngOnInit(): void {
-    this.shiftService.getAllShifts().subscribe((shifts: Shift[]) => {
-      const updatedShifts = shifts
-        .filter((shift: Shift) => shift.status !== ShiftStatus.UNAVAILABLE)
-        .sort((a: Shift, b: Shift) => {
-          const dateA = new Date(a.day).getTime();
-          const dateB = new Date(b.day).getTime();
+  ngOnInit(): void {}
 
-          return dateA - dateB;
+  async ngOnChanges(changes: SimpleChanges): Promise<any> {
+    console.log(`changes`, changes);
+    console.log(`changes.bothFilters`, changes.bothFilters);
+
+    if (
+      changes.bothFilters &&
+      changes.bothFilters.currentValue.specialty &&
+      changes.bothFilters.currentValue.user
+    ) {
+      return this.setShiftsTableByType({
+        type: ShiftFilterBy.BOTH_FILTERS,
+        bothPayload: changes.bothFilters.currentValue,
+      });
+    }
+    // Both (specialty and specialst)
+    // console.log(
+    //   'filterByUserParams',
+    //   changes.filterBySpecialtyParams && changes.filterByUserParams.currentValue
+    // );
+    // console.log(
+    //   'filterBySpecialtyParams',
+    //   changes.filterByUserParams && changes.filterBySpecialtyParams.currentValue
+    // );
+    // if (
+    //   changes.filterBySpecialtyParams &&
+    //   changes.filterBySpecialtyParams.currentValue &&
+    //   changes.filterByUserParams &&
+    //   changes.filterByUserParams.currentValue
+    // ) {
+    //   return console.log('AMBOS ESTÁN');
+    // }
+
+    if (
+      changes.filterBySpecialtyParams &&
+      changes.filterBySpecialtyParams.currentValue
+    ) {
+      // console.log(
+      //   'filterBySpecialtyParams',
+      //   changes.filterBySpecialtyParams.currentValue
+      // );
+
+      return this.setShiftsTableByType({
+        type: ShiftFilterBy.SPECIALTY,
+        specialtyPayload: changes.filterBySpecialtyParams.currentValue,
+      });
+    }
+
+    if (changes.filterByUserParams && changes.filterByUserParams.currentValue) {
+      // console.log(
+      //   'filterByUserParams',
+      //   changes.filterByUserParams.currentValue
+      // );
+
+      return this.setShiftsTableByType({
+        type: ShiftFilterBy.USER,
+        userPayload: changes.filterByUserParams.currentValue,
+      });
+    }
+
+    this.setShiftsTableByType({ type: ShiftFilterBy.DEFAULT });
+  }
+
+  async setShiftsTableByType({
+    type = ShiftFilterBy.DEFAULT,
+    specialtyPayload = null,
+    userPayload = null,
+    bothPayload = null,
+  }: Props): Promise<any> {
+    const filterUnavailableShifts = (shift: Shift) =>
+      shift.status !== ShiftStatus.UNAVAILABLE;
+
+    const sortShifts = (a: Shift, b: Shift) => {
+      const dateA = new Date(a.day).getTime();
+      const dateB = new Date(b.day).getTime();
+
+      return dateA - dateB;
+    };
+
+    switch (type) {
+      case ShiftFilterBy.BOTH_FILTERS:
+        if (bothPayload && bothPayload.specialty) {
+          const shiftsByBothFilters =
+            await this.shiftService.getShiftsBySpecialty(bothPayload.specialty);
+
+          shiftsByBothFilters.subscribe((shifts: Shift[]) => {
+            if (bothPayload.user?.role === Roles.SPECIALIST) {
+              this.shifts = shifts
+                .filter(filterUnavailableShifts)
+                .sort(sortShifts);
+            }
+
+            // PATIENT: falta del lado del paciente
+          });
+        }
+        break;
+
+      case ShiftFilterBy.SPECIALTY:
+        if (specialtyPayload) {
+          const shiftsBySpecialty =
+            await this.shiftService.getShiftsBySpecialty(specialtyPayload);
+
+          shiftsBySpecialty.subscribe((shifts: Shift[]) => {
+            this.shifts = shifts
+              .filter(filterUnavailableShifts)
+              .sort(sortShifts);
+          });
+        }
+        break;
+
+      case ShiftFilterBy.USER:
+        if (userPayload) {
+          if (userPayload.role === Roles.SPECIALIST) {
+            const BySpecialistEmail =
+              await this.shiftService.getShiftsBySpecialistEmail(
+                userPayload.email
+              );
+
+            return BySpecialistEmail.subscribe((shifts: Shift[]) => {
+              this.shifts = shifts
+                .filter(filterUnavailableShifts)
+                .sort(sortShifts);
+            });
+          }
+
+          //Patient
+          const ByPatientEmail =
+            await this.shiftService.getShiftsByPatientEmail(userPayload.email);
+
+          return ByPatientEmail.subscribe((shifts: Shift[]) => {
+            this.shifts = shifts
+              .filter(filterUnavailableShifts)
+              .sort(sortShifts);
+            console.log(`this.shifts PATIENT`, this.shifts);
+          });
+        }
+        break;
+
+      default:
+        this.shiftService.getAllShifts().subscribe((shifts: Shift[]) => {
+          this.shifts = shifts.filter(filterUnavailableShifts).sort(sortShifts);
         });
-
-      this.shiftList = updatedShifts;
-    });
+        break;
+    }
   }
 
   async selectShift(selectedShift: Shift) {
@@ -389,10 +557,18 @@ export class ShiftsTableComponent implements OnInit {
       errorNotification({ text: error.message });
     }
   }
+
+  renderTextEmptyCard(): string {
+    return this.filterBySpecialtyParams
+      ? `No hay turnos para la especialidad de ${this.filterBySpecialtyParams.name}`
+      : this.filterByUserParams
+      ? `${this.filterByUserParams.firstName} ${this.filterByUserParams.lastName} no posee turnos disponibles`
+      : '';
+  }
 }
 
 /**
  * TODO:
- * 1) Hacer que filtre los shifts por specialty o specialist o los dos juntos. (Si ninguno está seleccionado, mostrar todos los existentes)
+ * 1) Hacer que filtre los shifts por specialty o specialist o los dos juntos. (Si ninguno está seleccionado, mostrar todos los existentes (SOLO ADMIN))
  * 2) Agregar los datos dinámicos que me pide en el sprint 3
  */

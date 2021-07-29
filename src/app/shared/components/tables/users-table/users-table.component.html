@@ -4,7 +4,11 @@
 ></app-spinner>
 
 <!-- Filtros de especialistas por especialidad (solicitar turno) -->
-<div *ngIf="this.userList?.length === 0">
+<div
+  *ngIf="
+    this.userList && this.filterBySpecialtyParams && this.userList.length === 0
+  "
+>
   <app-empty-card
     [text]="
       'No hay especialistas para la especialidad de ' +
@@ -15,8 +19,16 @@
 </div>
 
 <div
+  *ngIf="
+    this.userList && !this.filterBySpecialtyParams && this.userList.length === 0
+  "
+>
+  <app-empty-card [text]="'No hay usuarios'" [icon]="'USER'"></app-empty-card>
+</div>
+
+<div
   class="mb-3 animate__animated animate__fadeIn"
-  *ngIf="this.userList?.length"
+  *ngIf="this.userList && this.userList.length !== 0"
 >
   <!-- Count list -->
   <h4
@@ -51,7 +63,7 @@
   <div
     *ngIf="this.copyList"
     class="overflow-auto"
-    [ngClass]="{ defaultTableHeight: this.copyList.length > 4 }"
+    [ngClass]="{ variantDefaultTableHeight: this.copyList.length >= 3 }"
   >
     <ul class="list-group">
       <li

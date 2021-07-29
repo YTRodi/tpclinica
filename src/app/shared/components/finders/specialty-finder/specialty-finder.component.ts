@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
-import { SpecialtyI } from 'src/app/auth/interfaces/specialty';
+import { Specialty } from 'src/app/auth/interfaces/specialty';
 import { SpecialtiesService } from 'src/app/auth/services/specialties.service';
 
 @Component({
@@ -9,9 +9,9 @@ import { SpecialtiesService } from 'src/app/auth/services/specialties.service';
 })
 export class SpecialtyFinderComponent implements OnInit {
   @Input() showAddItem: boolean = false;
-  @Output() onSelectSpecialty: EventEmitter<SpecialtyI | null>;
+  @Output() onSelectSpecialty: EventEmitter<Specialty | null>;
 
-  public specialtiesList: Array<SpecialtyI>;
+  public specialtiesList: Array<Specialty>;
 
   public copyList: any;
   public searchString: string;
@@ -21,7 +21,7 @@ export class SpecialtyFinderComponent implements OnInit {
   constructor(private specialtiesService: SpecialtiesService) {
     this.searchString = '';
     this.specialtiesList = [];
-    this.onSelectSpecialty = new EventEmitter<SpecialtyI | null>();
+    this.onSelectSpecialty = new EventEmitter<Specialty | null>();
   }
 
   ngOnInit(): void {
@@ -32,7 +32,7 @@ export class SpecialtyFinderComponent implements OnInit {
   }
 
   // Output
-  selectSpecialty(item: SpecialtyI) {
+  selectSpecialty(item: Specialty) {
     if (this.selectedSpecialty && this.selectedSpecialty.id === item.id) {
       this.onSelectSpecialty.emit(null);
       this.selectedSpecialty = null;
@@ -52,7 +52,7 @@ export class SpecialtyFinderComponent implements OnInit {
     this.copyList = this.specialtiesList;
 
     if (this.copyList) {
-      const filteredList = this.copyList.filter((specialty: SpecialtyI) => {
+      const filteredList = this.copyList.filter((specialty: Specialty) => {
         return specialty.name
           .toLowerCase()
           .includes(this.searchString.toLowerCase());

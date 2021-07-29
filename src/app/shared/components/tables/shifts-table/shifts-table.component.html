@@ -1,33 +1,26 @@
 <app-spinner
-  [isLoading]="!this.shiftList"
+  [isLoading]="!this.shifts"
   [text]="'Cargando lista de turnos'"
 ></app-spinner>
 
-<!-- Filtros de especialistas por especialidad (solicitar turno) -->
-<!-- <div *ngIf="this.shiftList?.length === 0">
-  <app-empty-card
-    [text]="
-      'No hay turnos para esta especialidad o especialista. ' +
-      this.filterBySpecialtyParams.name
-    "
-    [icon]="'USER'"
-  ></app-empty-card>
-</div> -->
+<div *ngIf="this.shifts && this.shifts.length === 0">
+  <app-empty-card [text]="this.renderTextEmptyCard()"></app-empty-card>
+</div>
 
-<div
-  class="mb-3 animate__animated animate__fadeIn"
-  *ngIf="this.shiftList?.length"
->
+<div class="mb-3 animate__animated animate__fadeIn" *ngIf="this.shifts?.length">
   <!-- Count list -->
-  <h4 class="d-flex justify-content-between align-items-center mb-3">
+  <h4
+    class="d-flex justify-content-between align-items-center mb-3"
+    *ngIf="this.showCountList"
+  >
     <!-- *ngIf="this.showCountList" -->
     <span class="text-primary">Lista de {{ this.title }}</span>
     <span class="badge bg-primary rounded-pill">
-      {{ this.shiftList?.length }}
+      {{ this.shifts?.length }}
     </span>
   </h4>
 
-  <div *ngIf="this.shiftList" class="overflow-auto shiftTableHeight">
+  <div *ngIf="this.shifts" class="overflow-auto shiftTableHeight">
     <ul class="list-group">
       <li
         class="
@@ -37,7 +30,7 @@
           align-items-center
         "
         style="cursor: pointer"
-        *ngFor="let shift of this.shiftList"
+        *ngFor="let shift of this.shifts"
         (click)="this.selectShift(shift)"
       >
         <div
@@ -98,7 +91,7 @@
         </div>
 
         <div
-          class="d-flex justify-content-start align-items-center"
+          class="d-flex justify-content-start align-items-center text-center"
           style="flex: 1"
           *ngIf="this.showPatient && !shift.patient"
         >
@@ -154,10 +147,7 @@
         </div>
       </li>
 
-      <app-empty-card
-        *ngIf="this.shiftList.length === 0"
-        [text]="'No hay turnos'"
-      >
+      <app-empty-card *ngIf="this.shifts.length === 0" [text]="'No hay turnos'">
       </app-empty-card>
     </ul>
   </div>

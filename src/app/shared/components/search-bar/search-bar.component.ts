@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { SpecialtyI } from 'src/app/auth/interfaces/specialty';
+import { Specialty } from 'src/app/auth/interfaces/specialty';
 import { SpecialtiesService } from 'src/app/auth/services/specialties.service';
 
 @Component({
@@ -45,7 +45,7 @@ export class SearchBarComponent implements OnInit {
     this.copyList = this.listToSearch;
 
     if (this.copyList) {
-      const filteredList = this.copyList.filter((specialty: SpecialtyI) => {
+      const filteredList = this.copyList.filter((specialty: Specialty) => {
         return specialty.name.toLowerCase().includes(this.searchString);
       });
 

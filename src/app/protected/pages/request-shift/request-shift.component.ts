@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { addDays } from 'date-fns';
-import { SpecialtyI } from 'src/app/auth/interfaces/specialty';
+import { Specialty } from 'src/app/auth/interfaces/specialty';
 import { Shift } from 'src/app/interfaces/shift.interface';
 import { Admin, Patient, Specialist } from 'src/app/interfaces/entities';
 import { ShiftService } from '../../services/shift.service';
@@ -24,7 +24,7 @@ import { Roles } from 'src/app/constants/roles';
 export class RequestShiftComponent implements OnInit {
   public currentUserFromDB: Patient | Specialist | Admin | null = null;
   public requestShiftForm: FormGroup;
-  public selectedSpecialty: SpecialtyI | null = null;
+  public selectedSpecialty: Specialty | null = null;
   public selectedSpecialist: Patient | Specialist | Admin | null = null;
   public selectedPatient: any = null;
   public shifts: Shift[] | null = null;
@@ -60,7 +60,7 @@ export class RequestShiftComponent implements OnInit {
     }
   }
 
-  setSelectedSpecialty(specialty: SpecialtyI | null) {
+  setSelectedSpecialty(specialty: Specialty | null) {
     this.selectedSpecialty = specialty;
     this.setSelectedSpecialist(null);
     this.requestShiftForm.patchValue({
@@ -76,7 +76,7 @@ export class RequestShiftComponent implements OnInit {
         specialist: this.selectedSpecialist.firstName,
       });
 
-      const result = await this.shiftService.getShiftsByEmail(
+      const result = await this.shiftService.getShiftsBySpecialistEmail(
         this.selectedSpecialist.email
       );
 
