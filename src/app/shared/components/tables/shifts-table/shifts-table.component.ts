@@ -116,12 +116,13 @@ const getCompletedShiftForm = () => {
       Validators.max(84),
     ]),
 
-    // edad y
+    // edad y ...?
   });
 };
 
 enum ShiftFilterBy {
   DEFAULT = 'DEFAULT',
+  CURRENT_USER = 'CURRENT_USER',
   SPECIALTY = 'SPECIALTY',
   USER = 'USER',
   BOTH_FILTERS = 'BOTH_FILTERS',
@@ -135,6 +136,7 @@ interface Props {
     specialty: Specialty | null;
     user: Patient | Specialist | Admin | null;
   } | null;
+  currentUserPayload?: Patient | Specialist | Admin | null;
 }
 
 @Component({
@@ -147,6 +149,7 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
     specialty: Specialty | null;
     user: Patient | Specialist | Admin | null;
   } | null = null;
+  @Input() shiftsByCurrentUser: Patient | Specialist | Admin | null = null;
   @Input() filterBySpecialtyParams: Specialty | null = null;
   @Input() filterByUserParams: Patient | Specialist | Admin | null = null;
 
@@ -181,12 +184,9 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
     this.onSelectShift = new EventEmitter<Shift | null>();
   }
 
-  ngOnInit(): void {}
+  ngOnInit(): any {}
 
   async ngOnChanges(changes: SimpleChanges): Promise<any> {
-    console.log(`changes`, changes);
-    console.log(`changes.bothFilters`, changes.bothFilters);
-
     if (
       changes.bothFilters &&
       changes.bothFilters.currentValue.specialty &&
@@ -197,33 +197,11 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
         bothPayload: changes.bothFilters.currentValue,
       });
     }
-    // Both (specialty and specialst)
-    // console.log(
-    //   'filterByUserParams',
-    //   changes.filterBySpecialtyParams && changes.filterByUserParams.currentValue
-    // );
-    // console.log(
-    //   'filterBySpecialtyParams',
-    //   changes.filterByUserParams && changes.filterBySpecialtyParams.currentValue
-    // );
-    // if (
-    //   changes.filterBySpecialtyParams &&
-    //   changes.filterBySpecialtyParams.currentValue &&
-    //   changes.filterByUserParams &&
-    //   changes.filterByUserParams.currentValue
-    // ) {
-    //   return console.log('AMBOS ESTÁN');
-    // }
 
     if (
       changes.filterBySpecialtyParams &&
       changes.filterBySpecialtyParams.currentValue
     ) {
-      // console.log(
-      //   'filterBySpecialtyParams',
-      //   changes.filterBySpecialtyParams.currentValue
-      // );
-
       return this.setShiftsTableByType({
         type: ShiftFilterBy.SPECIALTY,
         specialtyPayload: changes.filterBySpecialtyParams.currentValue,
@@ -231,11 +209,6 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
     }
 
     if (changes.filterByUserParams && changes.filterByUserParams.currentValue) {
-      // console.log(
-      //   'filterByUserParams',
-      //   changes.filterByUserParams.currentValue
-      // );
-
       return this.setShiftsTableByType({
         type: ShiftFilterBy.USER,
         userPayload: changes.filterByUserParams.currentValue,
@@ -243,6 +216,11 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
     }
 
     this.setShiftsTableByType({ type: ShiftFilterBy.DEFAULT });
+
+    return this.setShiftsTableByType({
+      type: ShiftFilterBy.CURRENT_USER,
+      currentUserPayload: this.shiftsByCurrentUser,
+    });
   }
 
   async setShiftsTableByType({
@@ -250,6 +228,7 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
     specialtyPayload = null,
     userPayload = null,
     bothPayload = null,
+    currentUserPayload = null,
   }: Props): Promise<any> {
     const filterUnavailableShifts = (shift: Shift) =>
       shift.status !== ShiftStatus.UNAVAILABLE;
@@ -262,19 +241,41 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
     };
 
     switch (type) {
+      case ShiftFilterBy.CURRENT_USER:
+        if (currentUserPayload) {
+          const shiftsByCurrentUser = await this.shiftService.getShiftsByEmail({
+            email: currentUserPayload.email,
+            role:
+              currentUserPayload.role === Roles.SPECIALIST
+                ? Roles.SPECIALIST
+                : Roles.PATIENT,
+          });
+
+          return shiftsByCurrentUser.subscribe((shifts: Shift[]) => {
+            this.shifts = shifts
+              .filter(filterUnavailableShifts)
+              .sort(sortShifts);
+          });
+        }
+        break;
+
       case ShiftFilterBy.BOTH_FILTERS:
         if (bothPayload && bothPayload.specialty) {
           const shiftsByBothFilters =
             await this.shiftService.getShiftsBySpecialty(bothPayload.specialty);
 
           shiftsByBothFilters.subscribe((shifts: Shift[]) => {
-            if (bothPayload.user?.role === Roles.SPECIALIST) {
-              this.shifts = shifts
-                .filter(filterUnavailableShifts)
-                .sort(sortShifts);
-            }
+            this.shifts = shifts
+              .filter((shift: Shift) => {
+                const isAvailable = filterUnavailableShifts(shift);
+                const isSameUser =
+                  bothPayload.user?.role === Roles.SPECIALIST
+                    ? shift.specialist?.email === bothPayload.user?.email //evaluo el email del especialista
+                    : shift.patient?.email === bothPayload.user?.email; //evaluo el email del paciente
 
-            // PATIENT: falta del lado del paciente
+                return isAvailable && isSameUser;
+              })
+              .sort(sortShifts);
           });
         }
         break;
@@ -295,10 +296,10 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
       case ShiftFilterBy.USER:
         if (userPayload) {
           if (userPayload.role === Roles.SPECIALIST) {
-            const BySpecialistEmail =
-              await this.shiftService.getShiftsBySpecialistEmail(
-                userPayload.email
-              );
+            const BySpecialistEmail = await this.shiftService.getShiftsByEmail({
+              email: userPayload.email,
+              role: Roles.SPECIALIST,
+            });
 
             return BySpecialistEmail.subscribe((shifts: Shift[]) => {
               this.shifts = shifts
@@ -308,14 +309,15 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
           }
 
           //Patient
-          const ByPatientEmail =
-            await this.shiftService.getShiftsByPatientEmail(userPayload.email);
+          const ByPatientEmail = await this.shiftService.getShiftsByEmail({
+            email: userPayload.email,
+            role: Roles.PATIENT,
+          });
 
           return ByPatientEmail.subscribe((shifts: Shift[]) => {
             this.shifts = shifts
               .filter(filterUnavailableShifts)
               .sort(sortShifts);
-            console.log(`this.shifts PATIENT`, this.shifts);
           });
         }
         break;
@@ -329,6 +331,7 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
   }
 
   async selectShift(selectedShift: Shift) {
+    console.log(`selectedShift`, selectedShift);
     this.onSelectShift.emit(selectedShift);
     this.selectedShift = selectedShift;
   }
@@ -406,7 +409,17 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
   }
 
   getAcceptShiftCondition(shift: Shift) {
-    return this.isSpecialist && isValidAdminAndSpecialistShiftStatus(shift);
+    const isValidShiftStatus =
+      shift.status !== ShiftStatus.REJECTED &&
+      shift.status !== ShiftStatus.ACCEPTED &&
+      shift.status !== ShiftStatus.CANCELLED &&
+      shift.status !== ShiftStatus.COMPLETED;
+
+    return (
+      this.isSpecialist &&
+      shift.status === ShiftStatus.PENDING &&
+      isValidShiftStatus
+    );
   }
 
   getCancelShiftCondition(shift: Shift) {
@@ -424,17 +437,18 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
   }
 
   getRejectShiftCondition(shift: Shift) {
-    return this.isSpecialist && isValidAdminAndSpecialistShiftStatus(shift);
+    return (
+      this.isSpecialist &&
+      shift.status !== ShiftStatus.AVAILABLE &&
+      shift.status !== ShiftStatus.ACCEPTED &&
+      shift.status !== ShiftStatus.COMPLETED &&
+      shift.status !== ShiftStatus.REJECTED &&
+      shift.status !== ShiftStatus.CANCELLED
+    );
   }
 
   getCompletedShiftCondition(shift: Shift) {
-    // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
-    // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
-    // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
-    // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
-    // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
-    // TODO: BORRAR EL '!' this.isSpecialist es para pruebas!!
-    return !this.isSpecialist && shift.status === ShiftStatus.ACCEPTED;
+    return this.isSpecialist && shift.status === ShiftStatus.ACCEPTED;
   }
 
   async onAcceptShift(shift: Shift) {
@@ -560,15 +574,9 @@ export class ShiftsTableComponent implements OnInit, OnChanges {
 
   renderTextEmptyCard(): string {
     return this.filterBySpecialtyParams
-      ? `No hay turnos para la especialidad de ${this.filterBySpecialtyParams.name}`
+      ? `No hay turnos para la especialidad de ${this.filterBySpecialtyParams.name}.`
       : this.filterByUserParams
-      ? `${this.filterByUserParams.firstName} ${this.filterByUserParams.lastName} no posee turnos disponibles`
+      ? `${this.filterByUserParams.firstName} ${this.filterByUserParams.lastName} no posee turnos.`
       : '';
   }
 }
-
-/**
- * TODO:
- * 1) Hacer que filtre los shifts por specialty o specialist o los dos juntos. (Si ninguno está seleccionado, mostrar todos los existentes (SOLO ADMIN))
- * 2) Agregar los datos dinámicos que me pide en el sprint 3
- */

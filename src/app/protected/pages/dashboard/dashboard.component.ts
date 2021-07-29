@@ -10,9 +10,4 @@ export class DashboardComponent implements OnInit {
   constructor(private shiftService: ShiftService) {}
 
   ngOnInit(): void {}
-
-  getShifts() {
-    // TODO: Hacer algo asi para la solicitd de turnos.
-    this.shiftService.getAllShifts().subscribe((data) => console.log(data[0]));
-  }
 }

@@ -13,7 +13,8 @@ import { MyProfileComponent } from './pages/my-profile/my-profile.component';
 import { ProfileCardComponent } from './components/profile-card/profile-card.component';
 import { ScheduleCardComponent } from './components/schedule-card/schedule-card.component';
 import { RequestShiftComponent } from './pages/request-shift/request-shift.component';
-import { ShiftsComponent } from './pages/admin/shifts/shifts.component';
+import { ShiftsAdminComponent } from './pages/admin/shifts-admin/shifts-admin.component';
+import { MyShiftsComponent } from './pages/my-shifts/my-shifts.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { ShiftsComponent } from './pages/admin/shifts/shifts.component';
     ProfileCardComponent,
     ScheduleCardComponent,
     RequestShiftComponent,
-    ShiftsComponent,
+    ShiftsAdminComponent,
+    MyShiftsComponent,
   ],
   imports: [
     CommonModule,

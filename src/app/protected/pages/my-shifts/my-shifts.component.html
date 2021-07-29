@@ -1,0 +1,65 @@
+<div class="container py-4">
+  <div class="row">
+    <div class="col-md-6 my-3">
+      <div class="rounded-3">
+        <h2>Especialidad</h2>
+        <app-specialty-finder
+          [showAddItem]="false"
+          (onSelectSpecialty)="this.setSelectedSpecialty($event)"
+          [specialtiesByCurrentUser]="this.currentUserFromDB"
+        ></app-specialty-finder>
+      </div>
+    </div>
+
+    <div class="col-md-6 my-3">
+      <div class="rounded-3">
+        <h2>{{ this.isSpecialist ? "Pacientes" : "Especialistas" }}</h2>
+
+        <app-users-table
+          [filter]="this.isSpecialist ? 'PATIENT' : 'SPECIALIST'"
+          (onSelectUser)="
+            this.isSpecialist
+              ? this.setSelectedPatient($event)
+              : this.setSelectedSpecialist($event)
+          "
+          [filterBySpecialtyParams]="this.selectedSpecialty"
+          [eneabledFinder]="true"
+          [showInputFinder]="true"
+          [showCountList]="false"
+          [showActiveButton]="false"
+          [showDeleteButton]="false"
+          [showRole]="true"
+          [showStatusAccount]="false"
+        ></app-users-table>
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col">
+      <div class="rounded-3">
+        <h2>Turnos</h2>
+
+        <app-shifts-table
+          [showCountList]="true"
+          [showPatient]="this.isSpecialist"
+          [showSpecialist]="this.isPatient"
+          [isPatient]="this.isPatient"
+          [isSpecialist]="this.isSpecialist"
+          (onSelectShift)="this.setSelectedShift($event)"
+          [filterBySpecialtyParams]="this.selectedSpecialty"
+          [filterByUserParams]="
+            this.isSpecialist ? this.selectedPatient : this.selectedSpecialist
+          "
+          [shiftsByCurrentUser]="this.currentUserFromDB"
+          [bothFilters]="{
+            specialty: this.selectedSpecialty,
+            user: this.isSpecialist
+              ? this.selectedPatient
+              : this.selectedSpecialist
+          }"
+        ></app-shifts-table>
+      </div>
+    </div>
+  </div>
+</div>

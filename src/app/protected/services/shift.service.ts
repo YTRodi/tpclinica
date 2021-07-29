@@ -8,9 +8,15 @@ import { addDays, getDay, isPast, set } from 'date-fns';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Specialty } from 'src/app/auth/interfaces/specialty';
+import { Roles } from 'src/app/constants/roles';
 import { ShiftStatus } from 'src/app/constants/shifts';
 import { parsedSelectedDatesInForm } from 'src/app/helpers/shift';
 import { Shift } from 'src/app/interfaces/shift.interface';
+
+interface Props {
+  email: string;
+  role?: Roles | null;
+}
 
 @Injectable({
   providedIn: 'root',
@@ -40,28 +46,14 @@ export class ShiftService {
       );
   }
 
-  public async getShiftsBySpecialistEmail(email: string) {
+  // public async getShiftsByEmail(email: string, role: Roles = Roles.PATIENT) {
+  public async getShiftsByEmail({ email, role = Roles.SPECIALIST }: Props) {
+    const fieldPath =
+      role === Roles.PATIENT ? 'patient.email' : 'specialist.email';
+
     return this.afs
       .collection(this.nameCollectionDB, (ref) =>
-        ref.where('specialist.email', '==', email)
-      )
-      .snapshotChanges()
-      .pipe(
-        map((actions: any) =>
-          actions.map((a: any) => {
-            const data = a.payload.doc.data() as object;
-            const id = a.payload.doc.id;
-
-            return { id, ...data };
-          })
-        )
-      );
-  }
-
-  public async getShiftsByPatientEmail(email: string) {
-    return this.afs
-      .collection(this.nameCollectionDB, (ref) =>
-        ref.where('patient.email', '==', email)
+        ref.where(fieldPath, '==', email)
       )
       .snapshotChanges()
       .pipe(

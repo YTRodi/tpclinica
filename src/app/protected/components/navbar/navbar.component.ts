@@ -19,13 +19,14 @@ export class NavbarComponent implements OnInit {
   public isAdmin: boolean;
 
   public navPatient: NavI[] = [
-    // { to: '/auth/register', routeName: 'Mis turnos' },
     { to: '/request-shift', routeName: 'Solicitar turno' },
+    { to: '/my-shifts', routeName: 'Mis turnos' },
     { to: '/my-profile', routeName: 'Mi Perfil' },
   ];
 
   public navSpecialist: NavI[] = [
     // { to: '/auth/register', routeName: 'Mis turnos' },
+    { to: '/my-shifts', routeName: 'Mis turnos' },
     { to: '/my-profile', routeName: 'Mi Perfil' },
   ];
 

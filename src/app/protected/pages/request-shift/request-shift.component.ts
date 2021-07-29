@@ -76,9 +76,10 @@ export class RequestShiftComponent implements OnInit {
         specialist: this.selectedSpecialist.firstName,
       });
 
-      const result = await this.shiftService.getShiftsBySpecialistEmail(
-        this.selectedSpecialist.email
-      );
+      const result = await this.shiftService.getShiftsByEmail({
+        email: this.selectedSpecialist.email,
+        role: Roles.SPECIALIST,
+      });
 
       result.subscribe((shifts: Shift[]) => {
         const today = new Date();

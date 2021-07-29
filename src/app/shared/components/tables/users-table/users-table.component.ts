@@ -15,6 +15,8 @@ import {
   successNotification,
 } from 'src/app/helpers/notifications';
 import { AuthService } from 'src/app/auth/services/auth.service';
+import { ShiftService } from 'src/app/protected/services/shift.service';
+import { Shift } from 'src/app/interfaces/shift.interface';
 
 @Component({
   selector: 'app-users-table',
@@ -51,7 +53,8 @@ export class UsersTableComponent implements OnInit, OnChanges {
 
   constructor(
     private authService: AuthService,
-    private userService: UserService
+    private userService: UserService,
+    private shiftService: ShiftService
   ) {
     this.onSelectUser = new EventEmitter<Patient | Specialist | Admin | null>();
     this.searchString = '';
@@ -180,10 +183,39 @@ export class UsersTableComponent implements OnInit, OnChanges {
     }
   }
 
-  async onFindUserBySpecialty(specialty: { id: string; name: string }) {
+  async onFindUserBySpecialty(specialty: {
+    id: string;
+    name: string;
+  }): Promise<any> {
+    // console.log(`this.currentUserFromDB`, this.currentUserFromDB);
     const result = await this.userService.getUsersBySpecialty(specialty);
 
+    /**
+     * TODO: Cuando toco una especialidad, se filtra la tabla de usuarios con 'especialistas' ya que ellso tienen un array de especialidades,
+     * tendría que hacer otra query para traer los usarios que matcheen con la specialty que vinee por parámetro
+     */
+
+    /**
+     * Idea:
+     * Si el currentUserFromDB es especialista, uso el shiftService y me traigo los usuarios que tengan turno con ese especialista
+     * y con la especialidad que viene por parámetro.
+     */
+
+    // Seguir probando...
+    // if (this.currentUserFromDB?.role === Roles.SPECIALIST) {
+    //   const shiftsBySpecialty = await this.shiftService.getShiftsBySpecialty(
+    //     specialty
+    //   );
+
+    //   return shiftsBySpecialty.subscribe((shifts: Shift[]) => {
+    //     console.log(`shifts`, shifts);
+    //     const filteredShiftsByUser = null;
+    //   });
+    // }
+
     result.subscribe((usersBySpecialty) => {
+      console.log(`usersBySpecialty`, usersBySpecialty);
+
       if (usersBySpecialty.length === 0) {
         this.existsUsersFindBySpecialty = true;
         this.userList = [];

@@ -1,14 +1,25 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  OnChanges,
+  OnInit,
+  Output,
+  SimpleChanges,
+} from '@angular/core';
 import { Specialty } from 'src/app/auth/interfaces/specialty';
 import { SpecialtiesService } from 'src/app/auth/services/specialties.service';
+import { Roles } from 'src/app/constants/roles';
+import { Patient, Specialist, Admin } from 'src/app/interfaces/entities';
 
 @Component({
   selector: 'app-specialty-finder',
   templateUrl: './specialty-finder.component.html',
   styleUrls: ['./specialty-finder.component.css'],
 })
-export class SpecialtyFinderComponent implements OnInit {
+export class SpecialtyFinderComponent implements OnInit, OnChanges {
   @Input() showAddItem: boolean = false;
+  @Input() specialtiesByCurrentUser: Patient | Specialist | Admin | null = null;
   @Output() onSelectSpecialty: EventEmitter<Specialty | null>;
 
   public specialtiesList: Array<Specialty>;
@@ -24,7 +35,20 @@ export class SpecialtyFinderComponent implements OnInit {
     this.onSelectSpecialty = new EventEmitter<Specialty | null>();
   }
 
-  ngOnInit(): void {
+  ngOnInit(): void {}
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      changes.specialtiesByCurrentUser &&
+      changes.specialtiesByCurrentUser.currentValue &&
+      changes.specialtiesByCurrentUser.currentValue.role === Roles.SPECIALIST
+    ) {
+      this.specialtiesList =
+        changes.specialtiesByCurrentUser.currentValue.specialties;
+      this.copyList = changes.specialtiesByCurrentUser.currentValue.specialties;
+      return;
+    }
+
     this.specialtiesService.getAllSpecialties().subscribe((data) => {
       this.specialtiesList = data;
       this.copyList = data;

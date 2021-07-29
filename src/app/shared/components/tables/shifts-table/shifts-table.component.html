@@ -95,7 +95,7 @@
           style="flex: 1"
           *ngIf="this.showPatient && !shift.patient"
         >
-          <h6 class="my-0">No hay paciente</h6>
+          <h6 class="my-0">Turno {{ this.formatStatus(shift.status) }}</h6>
         </div>
 
         <!-- Buttons -->
